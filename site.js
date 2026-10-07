@@ -103,10 +103,9 @@
       }
     }
     var langs = document.getElementById("langs");
-    if (langs) langs.setAttribute("aria-label", text("language"));
-    var buttons = document.querySelectorAll("#langs button");
-    for (var j = 0; j < buttons.length; j += 1) {
-      buttons[j].setAttribute("aria-pressed", buttons[j].getAttribute("data-lang") === lang ? "true" : "false");
+    if (langs) {
+      langs.setAttribute("aria-label", text("language"));
+      if (langs.value !== lang) langs.value = lang;
     }
     var siteTitle = document.getElementById("site-title");
     if (siteTitle) siteTitle.textContent = text("siteTitle");
@@ -139,10 +138,10 @@
     page = (options && options.page) || "home";
     onChange = options && options.onChange ? options.onChange : null;
     lang = loadLang();
-    var buttons = document.querySelectorAll("#langs button");
-    for (var i = 0; i < buttons.length; i += 1) {
-      buttons[i].addEventListener("click", function () {
-        setLang(this.getAttribute("data-lang"));
+    var langs = document.getElementById("langs");
+    if (langs) {
+      langs.addEventListener("change", function () {
+        setLang(langs.value);
       });
     }
     applyChrome();

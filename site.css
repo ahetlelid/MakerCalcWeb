@@ -37,6 +37,7 @@ a { color: inherit; }
 .sitenav {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.4rem;
   margin-bottom: 0.9rem;
 }
@@ -61,7 +62,8 @@ a { color: inherit; }
 
 .sitenav a:focus-visible,
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
   outline: 2px solid var(--brass);
   outline-offset: 2px;
 }
@@ -75,12 +77,18 @@ header h1, .toolcard h2 {
 
 .toolcard h2 { font-size: 1.25rem; }
 
-.header-top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem 0.75rem;
+#langs {
+  flex: 0 0 auto;
+  height: 2.4rem;
+  max-width: 11rem;
+  margin: 0 0 0 auto;
+  padding: 0 0.35rem 0 0.65rem;
+  border: 1px solid var(--card-edge);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 650;
 }
 
 header p, .toolcard p {
@@ -88,7 +96,7 @@ header p, .toolcard p {
   color: var(--muted);
 }
 
-.langs, .choices, .modes {
+.choices, .modes {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
@@ -110,7 +118,6 @@ button:disabled {
 
 button:active:not(:disabled) { background: #3c4438; }
 
-.langs button,
 .choices button,
 .modes button {
   flex: 0 0 auto;
@@ -121,11 +128,8 @@ button:active:not(:disabled) { background: #3c4438; }
   font-weight: 650;
 }
 
-.langs button { letter-spacing: 0.04em; }
-
 .choices button.primary { min-width: 4.2rem; }
 
-.langs button[aria-pressed="true"],
 .choices button[aria-pressed="true"],
 .modes button[aria-pressed="true"] {
   background: #3a3424;
@@ -186,6 +190,8 @@ label, .field-label {
   font-size: 1.6rem;
   line-height: 1;
 }
+
+.stepper .measure { flex: 1 1 auto; min-width: 0; }
 
 input[type="number"],
 input[type="text"] {
@@ -320,7 +326,7 @@ figcaption {
   text-align: center;
 }
 
-svg { display: block; width: 100%; height: auto; }
+svg { display: block; width: 100%; height: auto; overflow: hidden; }
 
 svg .void { fill: #243024; }
 svg .board { fill: none; stroke: var(--line); stroke-width: 9; stroke-linecap: butt; }

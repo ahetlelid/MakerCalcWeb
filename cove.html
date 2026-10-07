@@ -13,18 +13,16 @@
       <a href="index.html" data-nav="home">Verktøy</a>
       <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
       <a href="cove.html" data-nav="cove">Hulkil</a>
+      <select id="langs" aria-label="Språk">
+        <option value="no" lang="no">Norsk</option>
+        <option value="sv" lang="sv">Svenska</option>
+        <option value="da" lang="da">Dansk</option>
+        <option value="fi" lang="fi">Suomi</option>
+        <option value="en" lang="en">English</option>
+      </select>
     </nav>
     <header>
-      <div class="header-top">
-        <h1 id="title">Hulkil</h1>
-        <div class="langs" id="langs" role="group" aria-label="Språk">
-          <button type="button" data-lang="no" lang="no" aria-label="Norsk">NO</button>
-          <button type="button" data-lang="sv" lang="sv" aria-label="Svenska">SV</button>
-          <button type="button" data-lang="da" lang="da" aria-label="Dansk">DA</button>
-          <button type="button" data-lang="fi" lang="fi" aria-label="Suomi">FI</button>
-          <button type="button" data-lang="en" lang="en" aria-label="English">EN</button>
-        </div>
-      </div>
+      <h1 id="title">Hulkil</h1>
       <p id="intro">Oppsett for buet spor på sag. Bredde og dybde bestemmer buen.</p>
     </header>
 
@@ -32,16 +30,24 @@
       <h2 id="profile-heading">Spor</h2>
       <div class="field">
         <label id="width-label" for="width">Bredde</label>
-        <div class="measure">
-          <input id="width" type="text" inputmode="decimal" value="30" autocomplete="off">
-          <span>mm</span>
+        <div class="stepper">
+          <button type="button" id="width-dec" aria-label="Smalere">−</button>
+          <div class="measure">
+            <input id="width" type="text" inputmode="decimal" value="30" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="width-inc" aria-label="Bredere">+</button>
         </div>
       </div>
       <div class="field">
         <label id="depth-label" for="depth">Dybde</label>
-        <div class="measure">
-          <input id="depth" type="text" inputmode="decimal" value="8" autocomplete="off">
-          <span>mm</span>
+        <div class="stepper">
+          <button type="button" id="depth-dec" aria-label="Grunnere">−</button>
+          <div class="measure">
+            <input id="depth" type="text" inputmode="decimal" value="8" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="depth-inc" aria-label="Dypere">+</button>
         </div>
       </div>
       <div class="field">
@@ -111,6 +117,11 @@
         <p class="hint" id="angle-hint">0° er parallelt med bladet. 90° er på tvers.</p>
       </div>
       <div class="result">
+        <span class="result-label" id="tilt-label">Bladhelling</span>
+        <p class="value" id="tilt">—</p>
+        <p class="hint" id="tilt-hint">0° er loddrett blad. Hellingen flytter bunnpunktet til siden.</p>
+      </div>
+      <div class="result">
         <span class="result-label" id="center-label">Til bladsenter</span>
         <p class="value" id="center">—</p>
         <p class="hint" id="center-hint">fra venstre kant av sporet</p>
@@ -118,10 +129,6 @@
       <div class="result">
         <span class="result-label" id="side-label">Til bladside</span>
         <p class="value" id="side">—</p>
-      </div>
-      <div class="result" id="near-result" hidden>
-        <span class="result-label" id="near-label">Dybde ved nære kant</span>
-        <p class="value" id="near">—</p>
       </div>
       <p class="limit" id="limit" hidden></p>
     </section>
@@ -147,7 +154,11 @@
         width: "Bredde",
         depth: "Dybde",
         offset: "Forskyvning av bunnpunkt",
-        offsetHint: "0 er midt i sporet.",
+        offsetHint: "0 er midt i sporet. Ut fra midten helles bladet.",
+        narrower: "Smalere",
+        wider: "Bredere",
+        shallower: "Grunnere",
+        deeper: "Dypere",
         bladeHeading: "Sagblad",
         blade: "Bladdiameter",
         kerf: "Kuttbredde",
@@ -156,6 +167,8 @@
         height: "Bladløft",
         angle: "Gjerdevinkel",
         angleHint: "0° er parallelt med bladet. 90° er på tvers.",
+        tilt: "Bladhelling",
+        tiltHint: "0° er loddrett blad. Hellingen flytter bunnpunktet til siden.",
         toCenter: "Til bladsenter",
         toSide: "Til bladside",
         fromLeft: "fra venstre kant av sporet",
@@ -163,6 +176,7 @@
         invalid: "Sjekk målene. Bredde og dybde må være større enn null.",
         tooNarrow: "Sporet er smalere enn kuttbredden.",
         tooWide: "Sporet er bredere enn bladet kan skjære på denne dybden.",
+        offsetTooFar: "Forskyvningen er større enn bladet kan gi på denne dybden.",
         tooDeep: "Dybden er større enn bladdiameteren.",
         kerfRange: "Kuttbredden må være mellom 0,2 og 6 mm.",
         section: "Tverrsnitt",
@@ -177,7 +191,11 @@
         width: "Bredd",
         depth: "Djup",
         offset: "Förskjutning av bottenpunkten",
-        offsetHint: "0 är mitt i spåret.",
+        offsetHint: "0 är mitt i spåret. Ut från mitten lutas klingan.",
+        narrower: "Smalare",
+        wider: "Bredare",
+        shallower: "Grundare",
+        deeper: "Djupare",
         bladeHeading: "Sågklinga",
         blade: "Klingdiameter",
         kerf: "Snittbredd",
@@ -186,6 +204,8 @@
         height: "Klinghöjd",
         angle: "Anhållsvinkel",
         angleHint: "0° är parallellt med klingan. 90° är tvärs.",
+        tilt: "Klinglutning",
+        tiltHint: "0° är lodrät klinga. Lutningen flyttar bottenpunkten åt sidan.",
         toCenter: "Till klingcentrum",
         toSide: "Till klingans sida",
         fromLeft: "från vänster kant av spåret",
@@ -193,6 +213,7 @@
         invalid: "Kontrollera måtten. Bredd och djup måste vara större än noll.",
         tooNarrow: "Spåret är smalare än snittbredden.",
         tooWide: "Spåret är bredare än klingan kan såga på det här djupet.",
+        offsetTooFar: "Förskjutningen är större än klingan kan ge på det här djupet.",
         tooDeep: "Djupet är större än klingdiametern.",
         kerfRange: "Snittbredden måste vara mellan 0,2 och 6 mm.",
         section: "Tvärsnitt",
@@ -207,7 +228,11 @@
         width: "Bredde",
         depth: "Dybde",
         offset: "Forskydning af bundpunktet",
-        offsetHint: "0 er midt i sporet.",
+        offsetHint: "0 er midt i sporet. Ud fra midten hældes klingen.",
+        narrower: "Smallere",
+        wider: "Bredere",
+        shallower: "Lavere",
+        deeper: "Dybere",
         bladeHeading: "Savklinge",
         blade: "Klingediameter",
         kerf: "Snitbredde",
@@ -216,6 +241,8 @@
         height: "Klingeopstilling",
         angle: "Anlægsvinkel",
         angleHint: "0° er parallelt med klingen. 90° er på tværs.",
+        tilt: "Klingehældning",
+        tiltHint: "0° er lodret klinge. Hældningen flytter bundpunktet til siden.",
         toCenter: "Til klingecentrum",
         toSide: "Til klingens side",
         fromLeft: "fra venstre kant af sporet",
@@ -223,6 +250,7 @@
         invalid: "Tjek målene. Bredde og dybde skal være større end nul.",
         tooNarrow: "Sporet er smallere end snitbredden.",
         tooWide: "Sporet er bredere, end klingen kan skære i den dybde.",
+        offsetTooFar: "Forskydningen er større, end klingen kan give i den dybde.",
         tooDeep: "Dybden er større end klingediameteren.",
         kerfRange: "Snitbredden skal være mellem 0,2 og 6 mm.",
         section: "Tværsnit",
@@ -237,7 +265,11 @@
         width: "Leveys",
         depth: "Syvyys",
         offset: "Pohjan siirto",
-        offsetHint: "0 on uran keskellä.",
+        offsetHint: "0 on uran keskellä. Keskeltä poikkeaminen kallistaa terää.",
+        narrower: "Kapeampi",
+        wider: "Leveämpi",
+        shallower: "Matalampi",
+        deeper: "Syvempi",
         bladeHeading: "Sahanterä",
         blade: "Terän halkaisija",
         kerf: "Sahausleveys",
@@ -246,6 +278,8 @@
         height: "Terän korkeus",
         angle: "Ohjainkulma",
         angleHint: "0° on terän suuntainen. 90° on poikittain.",
+        tilt: "Terän kallistus",
+        tiltHint: "0° on pystysuora terä. Kallistus siirtää pohjaa sivulle.",
         toCenter: "Terän keskelle",
         toSide: "Terän sivuun",
         fromLeft: "uran vasemmasta reunasta",
@@ -253,6 +287,7 @@
         invalid: "Tarkista mitat. Leveyden ja syvyyden on oltava suurempia kuin nolla.",
         tooNarrow: "Ura on kapeampi kuin sahausleveys.",
         tooWide: "Ura on leveämpi kuin terä pystyy sahaamaan tällä syvyydellä.",
+        offsetTooFar: "Siirto on suurempi kuin terä pystyy tällä syvyydellä.",
         tooDeep: "Syvyys on suurempi kuin terän halkaisija.",
         kerfRange: "Sahausleveyden on oltava 0,2–6 mm.",
         section: "Poikkileikkaus",
@@ -267,7 +302,11 @@
         width: "Width",
         depth: "Depth",
         offset: "Shift of the bottom",
-        offsetHint: "0 is the middle of the groove.",
+        offsetHint: "0 is the middle of the groove. Off center, the blade is tilted.",
+        narrower: "Narrower",
+        wider: "Wider",
+        shallower: "Shallower",
+        deeper: "Deeper",
         bladeHeading: "Saw blade",
         blade: "Blade diameter",
         kerf: "Kerf",
@@ -276,6 +315,8 @@
         height: "Blade height",
         angle: "Fence angle",
         angleHint: "0° is parallel to the blade. 90° is square across.",
+        tilt: "Blade tilt",
+        tiltHint: "0° is a vertical blade. Tilt moves the bottom to the side.",
         toCenter: "To blade center",
         toSide: "To blade face",
         fromLeft: "from the left edge of the groove",
@@ -283,6 +324,7 @@
         invalid: "Check the sizes. Width and depth must be greater than zero.",
         tooNarrow: "The groove is narrower than the kerf.",
         tooWide: "The groove is wider than the blade can cut at this depth.",
+        offsetTooFar: "The shift is greater than the blade can make at this depth.",
         tooDeep: "The depth is greater than the blade diameter.",
         kerfRange: "Kerf must be between 0.2 and 6 mm.",
         section: "Section",
@@ -325,8 +367,85 @@
       return Workshop.formatNumber(value, 2) + "°";
     }
 
-    function shifted() {
-      return Math.abs(state.e) > 1e-6;
+    function cutAtBeta(beta, w, d, R, kerf) {
+      var cosB = Math.cos(beta);
+      var sinB = Math.sin(beta);
+      if (cosB < 1e-6) return null;
+      var cosG = 1 - d / (R * cosB);
+      if (cosG <= 0 || cosG >= 1) return null;
+      var sinG = Math.sqrt(1 - cosG * cosG);
+      var chord = 2 * R * sinG;
+      var kerfTerm = kerf * cosB;
+      var hyp = Math.sqrt(chord * chord + kerfTerm * kerfTerm);
+      if (w > hyp + 1e-4) return { tooWide: true };
+      if (w + 1e-4 < kerfTerm) return { tooNarrow: true };
+      var ratio = Math.min(1, Math.max(-1, w / hyp));
+      var alpha = Math.asin(ratio) - Math.atan2(kerfTerm, chord);
+      if (alpha < 0) alpha = 0;
+      return {
+        alpha: alpha,
+        beta: beta,
+        gamma: Math.acos(cosG),
+        cosA: Math.cos(alpha),
+        sinA: Math.sin(alpha),
+        cosB: cosB,
+        sinB: sinB,
+        eCalc: d * Math.tan(beta) * Math.cos(alpha),
+        R: R,
+        cx: (d - R * cosB) * Math.tan(beta),
+        cz: d - R * cosB
+      };
+    }
+
+    function solveTilt(w, d, eAbs, R, kerf) {
+      var betaMax = Math.acos(Math.min(0.999, Math.max(d / R, 1e-4))) * 0.995;
+      var zero = cutAtBeta(0, w, d, R, kerf);
+      if (!zero) return { error: "invalid" };
+      if (zero.tooWide) return { error: "tooWide" };
+      if (zero.tooNarrow) return { error: "tooNarrow" };
+      if (eAbs < 1e-4) return zero;
+      var best = zero;
+      var steps = 80;
+      for (var i = 1; i <= steps; i += 1) {
+        var trial = cutAtBeta(betaMax * i / steps, w, d, R, kerf);
+        if (trial && !trial.tooWide && !trial.tooNarrow && trial.eCalc >= best.eCalc) best = trial;
+      }
+      if (best.eCalc + 0.2 < eAbs) return { error: "offsetTooFar" };
+      var lo = 0;
+      var hi = best.beta;
+      var solved = best;
+      for (var n = 0; n < 40; n += 1) {
+        var mid = (lo + hi) / 2;
+        var cut = cutAtBeta(mid, w, d, R, kerf);
+        if (!cut || cut.tooWide || cut.tooNarrow || cut.eCalc < eAbs) lo = mid;
+        else {
+          hi = mid;
+          solved = cut;
+        }
+      }
+      return solved;
+    }
+
+    function widenByKerf(samples, flat, peakZ) {
+      if (!(flat > 1e-4)) return samples;
+      var peakI = 0;
+      for (var i = 1; i < samples.length; i += 1) {
+        if (samples[i].z > samples[peakI].z) peakI = i;
+      }
+      var earlier = samples[Math.max(0, peakI - 1)].s;
+      var later = samples[Math.min(samples.length - 1, peakI + 1)].s;
+      var dir = earlier >= later ? 1 : -1;
+      var peakS = samples[peakI].s;
+      var out = [];
+      for (var i = 0; i < peakI; i += 1) {
+        out.push({ s: samples[i].s + dir * flat / 2, z: samples[i].z });
+      }
+      out.push({ s: peakS + dir * flat / 2, z: peakZ });
+      out.push({ s: peakS - dir * flat / 2, z: peakZ });
+      for (var j = peakI + 1; j < samples.length; j += 1) {
+        out.push({ s: samples[j].s - dir * flat / 2, z: samples[j].z });
+      }
+      return out;
     }
 
     function sawSetup() {
@@ -343,46 +462,32 @@
       if (e > limit) e = limit;
       if (e < -limit) e = -limit;
       state.e = e;
-      var halfChord = Math.sqrt(d * (B - d));
-      var distLeft = Math.abs(-w / 2 - e);
-      var distRight = Math.abs(w / 2 - e);
-      var far = Math.max(distLeft, distRight);
-      var nearDist = Math.min(distLeft, distRight);
-      var halfKerf = kerf / 2;
-      var hyp = Math.sqrt(halfChord * halfChord + halfKerf * halfKerf);
-      if (far < halfKerf - 1e-6) return { error: "tooNarrow" };
-      if (far > hyp + 1e-6) return { error: "tooWide" };
-      var alphaRad = Math.asin(Math.min(1, far / hyp)) - Math.atan2(halfKerf, halfChord);
-      if (alphaRad < 0) alphaRad = 0;
-      var sinA = Math.sin(alphaRad);
-      var cosA = Math.cos(alphaRad);
+      var cut = solveTilt(w, d, Math.abs(e), B / 2, kerf);
+      if (cut.error) return cut;
+      var sign = e < 0 ? -1 : 1;
+      var flat = kerf * cut.cosB * cut.cosA;
+      var raw = [];
+      var count = 72;
+      for (var i = 0; i <= count; i += 1) {
+        var phi = -cut.gamma + (2 * cut.gamma * i) / count;
+        var x = cut.cx + cut.R * Math.cos(phi) * cut.sinB;
+        var y = cut.R * Math.sin(phi);
+        var z = cut.cz + cut.R * Math.cos(phi) * cut.cosB;
+        raw.push({
+          s: sign * (x * cut.cosA - y * cut.sinA),
+          z: z < 0 ? 0 : z
+        });
+      }
+      var samples = widenByKerf(raw, flat, d);
       var toCenter = w / 2 + e;
-      var setup = {
-        alpha: alphaRad * 180 / Math.PI,
+      return {
+        alpha: cut.alpha * 180 / Math.PI,
+        beta: cut.beta * 180 / Math.PI,
         height: d,
         toCenter: toCenter,
-        toSide: toCenter - halfKerf * cosA,
-        sinA: sinA,
-        halfChord: halfChord,
-        flat: halfKerf * cosA
+        toSide: toCenter - (kerf / 2) * cut.cosB * cut.cosA,
+        samples: samples
       };
-      setup.nearDepth = profileDepth(nearDist, setup);
-      return setup;
-    }
-
-    function profileDepth(dist, setup) {
-      if (dist <= setup.flat) return state.d;
-      if (setup.sinA < 1e-8) return 0;
-      var xBlade = (dist - setup.flat) / setup.sinA;
-      if (xBlade >= setup.halfChord - 1e-8) return 0;
-      var R = state.blade / 2;
-      var under = R * R - xBlade * xBlade;
-      if (under <= 0) return 0;
-      return Math.sqrt(under) - (R - state.d);
-    }
-
-    function depthAt(x, setup) {
-      return profileDepth(Math.abs(x - state.e), setup);
     }
 
     function writeField(el, value, digits) {
@@ -395,7 +500,7 @@
       document.getElementById("angle").textContent = "—";
       document.getElementById("center").textContent = "—";
       document.getElementById("side").textContent = "—";
-      document.getElementById("near-result").hidden = true;
+      document.getElementById("tilt").textContent = "—";
       var limit = document.getElementById("limit");
       limit.hidden = false;
       limit.textContent = t(code);
@@ -405,33 +510,91 @@
 
     function renderSection(setup) {
       var svg = document.getElementById("section-svg");
-      var w = state.w;
-      var left = 28;
-      var right = 292;
-      var top = 36;
-      var bottom = 150;
-      var scaleX = (right - left) / w;
-      var maxDepth = state.d;
-      var scaleY = Math.min(scaleX, (bottom - top) / Math.max(maxDepth, 1));
-      var baseY = top + maxDepth * scaleY + 8;
-      if (baseY > bottom) baseY = bottom;
-      function X(x) { return left + (x + w / 2) * scaleX; }
+      var samples = setup.samples;
+      var sMin = samples[0].s;
+      var sMax = samples[0].s;
+      for (var n = 1; n < samples.length; n += 1) {
+        if (samples[n].s < sMin) sMin = samples[n].s;
+        if (samples[n].s > sMax) sMax = samples[n].s;
+      }
+      var left = 44;
+      var right = 276;
+      var topLimit = 34;
+      var bottomLimit = 158;
+      var span = Math.max(sMax - sMin, 0.1);
+      var scaleX = (right - left) / span;
+      var scaleY = Math.min(scaleX, (bottomLimit - topLimit) / Math.max(state.d, 0.1));
+      var baseY = topLimit + state.d * scaleY;
+      if (baseY < bottomLimit) baseY = bottomLimit;
+      function X(s) { return left + (s - sMin) * scaleX; }
       function Y(depth) { return baseY - depth * scaleY; }
       var pts = [];
-      var steps = 48;
-      for (var i = 0; i <= steps; i += 1) {
-        var x = -w / 2 + (w * i) / steps;
-        pts.push(X(x).toFixed(1) + "," + Y(depthAt(x, setup)).toFixed(1));
+      var maxZ = samples[0].z;
+      for (var i = 0; i < samples.length; i += 1) {
+        if (samples[i].z > maxZ) maxZ = samples[i].z;
+        pts.push(X(samples[i].s).toFixed(1) + "," + Y(samples[i].z).toFixed(1));
       }
-      var face = X(-w / 2).toFixed(1) + "," + Y(0).toFixed(1) + " " + X(w / 2).toFixed(1) + "," + Y(0).toFixed(1);
-      var apex = [X(state.e), Y(state.d)];
+      var flatLo = samples[0].s;
+      var flatHi = samples[0].s;
+      var foundFlat = false;
+      for (var f = 0; f < samples.length; f += 1) {
+        if (samples[f].z < maxZ - 1e-6) continue;
+        if (!foundFlat || samples[f].s < flatLo) flatLo = samples[f].s;
+        if (!foundFlat || samples[f].s > flatHi) flatHi = samples[f].s;
+        foundFlat = true;
+      }
+      var peakS = (flatLo + flatHi) / 2;
+      var ax = X(peakS);
+      var ay = Y(maxZ);
+      var betaRad = setup.beta * Math.PI / 180;
+      var alphaRad = setup.alpha * Math.PI / 180;
+      var lean = (state.e < 0 ? -1 : 1) * Math.tan(betaRad) / Math.max(Math.cos(alphaRad), 0.05);
+      function sAt(depth) { return peakS + lean * (depth - maxZ); }
+      function clipFromApex(depth) {
+        var tx = X(sAt(depth));
+        var ty = Y(depth);
+        var dx = tx - ax;
+        var dy = ty - ay;
+        var len = Math.sqrt(dx * dx + dy * dy);
+        if (len < 1e-6) return { x: ax, y: ty };
+        var ux = dx / len;
+        var uy = dy / len;
+        var reach = Math.min(len, travelToEdge(ax, ay, ux, uy, 10, 10, 310, 172));
+        return { x: ax + ux * reach, y: ay + uy * reach };
+      }
+      var bladeTop = clipFromApex(maxZ + state.d * 0.7);
+      var bladeFoot = clipFromApex(0);
+      var labelX = ax;
+      var anchor = "middle";
+      if (Math.abs(setup.beta) > 2) {
+        anchor = state.e < 0 ? "start" : "end";
+        labelX = state.e < 0 ? Math.min(310, ax + 10) : Math.max(10, ax - 10);
+      } else if (ax < 78) {
+        anchor = "start";
+        labelX = Math.max(10, ax - 8);
+      } else if (ax > 242) {
+        anchor = "end";
+        labelX = Math.min(310, ax + 8);
+      }
+      var labelY = Math.max(16, ay - 12);
+      var ground = Y(0).toFixed(1);
       svg.innerHTML =
-        '<polygon class="void" points="' + X(-w / 2).toFixed(1) + "," + Y(0).toFixed(1) + " " + pts.join(" ") + " " + X(w / 2).toFixed(1) + "," + Y(0).toFixed(1) + '"/>' +
+        '<polygon class="void" points="' + X(sMin).toFixed(1) + "," + ground + " " + pts.join(" ") + " " + X(sMax).toFixed(1) + "," + ground + '"/>' +
         '<polyline class="cove-curve" points="' + pts.join(" ") + '"/>' +
-        '<line class="ground" x1="' + X(-w / 2).toFixed(1) + '" y1="' + Y(0).toFixed(1) + '" x2="' + X(w / 2).toFixed(1) + '" y2="' + Y(0).toFixed(1) + '"/>' +
-        '<line class="plumb" x1="' + apex[0].toFixed(1) + '" y1="' + Y(0).toFixed(1) + '" x2="' + apex[0].toFixed(1) + '" y2="' + apex[1].toFixed(1) + '"/>' +
-        '<circle class="apex" cx="' + apex[0].toFixed(1) + '" cy="' + apex[1].toFixed(1) + '" r="4.5"/>' +
-        '<text class="small-label" x="' + apex[0].toFixed(1) + '" y="' + (apex[1] - 14).toFixed(1) + '" text-anchor="middle">' + t("apex") + "</text>";
+        '<line class="ground" x1="' + X(sMin).toFixed(1) + '" y1="' + ground + '" x2="' + X(sMax).toFixed(1) + '" y2="' + ground + '"/>' +
+        '<line class="plumb" x1="' + bladeFoot.x.toFixed(1) + '" y1="' + bladeFoot.y.toFixed(1) + '" x2="' + bladeTop.x.toFixed(1) + '" y2="' + bladeTop.y.toFixed(1) + '"/>' +
+        '<circle class="apex" cx="' + ax.toFixed(1) + '" cy="' + ay.toFixed(1) + '" r="4.5"/>' +
+        '<text class="small-label" x="' + labelX.toFixed(1) + '" y="' + labelY.toFixed(1) + '" text-anchor="' + anchor + '">' + t("apex") + "</text>";
+    }
+
+    function travelToEdge(x, y, dx, dy, minX, minY, maxX, maxY) {
+      var limit = Infinity;
+      if (dx > 1e-9) limit = Math.min(limit, (maxX - x) / dx);
+      else if (dx < -1e-9) limit = Math.min(limit, (minX - x) / dx);
+      if (dy > 1e-9) limit = Math.min(limit, (maxY - y) / dy);
+      else if (dy < -1e-9) limit = Math.min(limit, (minY - y) / dy);
+      if (!isFinite(limit) || limit < 0) return 0;
+      return limit;
     }
 
     function renderPlan(setup) {
@@ -448,11 +611,16 @@
       function across(x) { return fenceY - (x + w / 2) * scale; }
       var apexY = across(state.e);
       var a = setup.alpha * Math.PI / 180;
-      var half = (B / 2) * scale;
-      var x1 = cx - Math.cos(a) * half;
-      var y1 = apexY + Math.sin(a) * half;
-      var x2 = cx + Math.cos(a) * half;
-      var y2 = apexY - Math.sin(a) * half;
+      var dx = Math.cos(a);
+      var dy = -Math.sin(a);
+      var reach = (B / 2) * scale;
+      var inset = 14;
+      var tPos = Math.min(reach, travelToEdge(cx, apexY, dx, dy, inset, inset, 320 - inset, 200 - inset));
+      var tNeg = Math.min(reach, travelToEdge(cx, apexY, -dx, -dy, inset, inset, 320 - inset, 200 - inset));
+      var x1 = cx - dx * tNeg;
+      var y1 = apexY - dy * tNeg;
+      var x2 = cx + dx * tPos;
+      var y2 = apexY + dy * tPos;
       var stroke = Math.max(4, state.kerf * scale);
       svg.innerHTML =
         '<line class="fence" x1="16" y1="' + fenceY + '" x2="304" y2="' + fenceY + '"/>' +
@@ -463,7 +631,6 @@
     }
 
     function render() {
-      var moved = shifted();
       if (!(state.w > 0) || !(state.d > 0)) {
         showError("invalid");
         return;
@@ -481,6 +648,11 @@
       writeField(fields.kerf, state.kerf, 1);
       markChoices("#blade-choices", "data-blade", state.blade);
       markChoices("#kerf-choices", "data-kerf", state.kerf);
+      document.getElementById("width-dec").disabled = state.w <= 1;
+      document.getElementById("width-inc").disabled = state.w >= 999;
+      document.getElementById("depth-dec").disabled = state.d <= 1;
+      document.getElementById("depth-inc").disabled = state.d >= 999;
+      saveState();
 
       if (setup.error) {
         showError(setup.error);
@@ -488,21 +660,53 @@
       }
       document.getElementById("height").textContent = formatMm(setup.height, 1) + " mm";
       document.getElementById("angle").textContent = formatDeg(setup.alpha);
+      document.getElementById("tilt").textContent = formatDeg(setup.beta);
       document.getElementById("center").textContent = formatMm(setup.toCenter, 1) + " mm";
       document.getElementById("side").textContent = formatMm(setup.toSide, 1) + " mm";
-      var nearBox = document.getElementById("near-result");
-      if (moved) {
-        nearBox.hidden = false;
-        document.getElementById("near").textContent = formatMm(setup.nearDepth, 1) + " mm";
-      } else {
-        nearBox.hidden = true;
-        document.getElementById("near").textContent = "—";
-      }
       document.getElementById("limit").hidden = true;
       renderSection(setup);
       renderPlan(setup);
       document.getElementById("section-cap").textContent = t("section");
       document.getElementById("plan-cap").textContent = t("plan");
+    }
+
+    function saveState() {
+      if (!(state.w > 0) || !(state.d > 0) || !(state.blade > 0)) return;
+      if (!(state.kerf >= 0.2) || state.kerf > 6) return;
+      try {
+        localStorage.setItem("makercalc-cove", JSON.stringify({
+          w: state.w,
+          d: state.d,
+          e: state.e,
+          blade: state.blade,
+          kerf: state.kerf
+        }));
+      } catch (err) {
+        /* the page still works for this visit */
+      }
+    }
+
+    function loadState() {
+      try {
+        var raw = localStorage.getItem("makercalc-cove");
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (data.w > 0) state.w = data.w;
+        if (data.d > 0) state.d = data.d;
+        if (typeof data.e === "number" && isFinite(data.e)) state.e = data.e;
+        if (data.blade > 0) state.blade = data.blade;
+        if (data.kerf >= 0.2 && data.kerf <= 6) state.kerf = data.kerf;
+      } catch (err) {
+        /* keep the built-in starting values */
+      }
+    }
+
+    function nudge(key, delta, min, max) {
+      var next = Math.round((state[key] + delta) * 10) / 10;
+      if (next < min) next = min;
+      if (next > max) next = max;
+      state[key] = next;
+      render();
     }
 
     function markChoices(selector, attr, value) {
@@ -539,6 +743,11 @@
       render();
     });
 
+    document.getElementById("width-dec").addEventListener("click", function () { nudge("w", -1, 1, 999); });
+    document.getElementById("width-inc").addEventListener("click", function () { nudge("w", 1, 1, 999); });
+    document.getElementById("depth-dec").addEventListener("click", function () { nudge("d", -1, 1, 999); });
+    document.getElementById("depth-inc").addEventListener("click", function () { nudge("d", 1, 1, 999); });
+
     var bladeButtons = document.querySelectorAll("#blade-choices button");
     for (var b = 0; b < bladeButtons.length; b += 1) {
       bladeButtons[b].addEventListener("click", function () {
@@ -564,7 +773,11 @@
       document.getElementById("profile-panel").setAttribute("aria-label", t("profile"));
       document.getElementById("profile-heading").textContent = t("profile");
       document.getElementById("width-label").textContent = t("width");
+      document.getElementById("width-dec").setAttribute("aria-label", t("narrower"));
+      document.getElementById("width-inc").setAttribute("aria-label", t("wider"));
       document.getElementById("depth-label").textContent = t("depth");
+      document.getElementById("depth-dec").setAttribute("aria-label", t("shallower"));
+      document.getElementById("depth-inc").setAttribute("aria-label", t("deeper"));
       document.getElementById("offset-label").textContent = t("offset");
       document.getElementById("offset-hint").textContent = t("offsetHint");
       document.getElementById("blade-heading").textContent = t("bladeHeading");
@@ -575,10 +788,11 @@
       document.getElementById("height-label").textContent = t("height");
       document.getElementById("angle-label").textContent = t("angle");
       document.getElementById("angle-hint").textContent = t("angleHint");
+      document.getElementById("tilt-label").textContent = t("tilt");
+      document.getElementById("tilt-hint").textContent = t("tiltHint");
       document.getElementById("center-label").textContent = t("toCenter");
       document.getElementById("side-label").textContent = t("toSide");
       document.getElementById("center-hint").textContent = t("fromLeft");
-      document.getElementById("near-label").textContent = t("near");
       document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
       var kerfButtons = document.querySelectorAll("#kerf-choices button");
       for (var k = 0; k < kerfButtons.length; k += 1) {
@@ -587,6 +801,7 @@
       render();
     }
 
+    loadState();
     Workshop.init({ page: "cove", onChange: applyPage });
   </script>
 </body>
