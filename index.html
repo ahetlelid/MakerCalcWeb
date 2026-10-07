@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Verkstedverktøy</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <nav class="sitenav" id="sitenav">
+      <a href="index.html" data-nav="home">Verktøy</a>
+      <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
+      <a href="cove.html" data-nav="cove">Hulkil</a>
+    </nav>
+    <header>
+      <div class="header-top">
+        <h1 id="site-title">Verkstedverktøy</h1>
+        <div class="langs" id="langs" role="group" aria-label="Språk">
+          <button type="button" data-lang="no" lang="no" aria-label="Norsk">NO</button>
+          <button type="button" data-lang="sv" lang="sv" aria-label="Svenska">SV</button>
+          <button type="button" data-lang="da" lang="da" aria-label="Dansk">DA</button>
+          <button type="button" data-lang="fi" lang="fi" aria-label="Suomi">FI</button>
+          <button type="button" data-lang="en" lang="en" aria-label="English">EN</button>
+        </div>
+      </div>
+      <p id="site-intro">Enkle regnestykker for hobbyverkstedet. Sidene virker uten nett.</p>
+    </header>
+    <div class="tools">
+      <a class="toolcard" href="miter.html">
+        <h2 id="link-miter-name">Sammensatt gjæring</h2>
+        <p id="link-miter-blurb">Gjæring og bladhelling for en mangekant.</p>
+      </a>
+      <a class="toolcard" href="cove.html">
+        <h2 id="link-cove-name">Hulkil</h2>
+        <p id="link-cove-blurb">Sporprofil og oppsett for et buet spor på sagen.</p>
+      </a>
+    </div>
+  </main>
+  <script src="site.js"></script>
+  <script>
+    Workshop.init({ page: "home" });
+  </script>
+</body>
+</html>

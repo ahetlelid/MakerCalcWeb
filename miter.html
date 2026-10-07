@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Sammensatt gjæring</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <nav class="sitenav" id="sitenav">
+      <a href="index.html" data-nav="home">Verktøy</a>
+      <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
+      <a href="cove.html" data-nav="cove">Hulkil</a>
+    </nav>
+    <header>
+      <div class="header-top">
+        <h1 id="title">Sammensatt gjæring</h1>
+        <div class="langs" id="langs" role="group" aria-label="Språk">
+          <button type="button" data-lang="no" lang="no" aria-label="Norsk">NO</button>
+          <button type="button" data-lang="sv" lang="sv" aria-label="Svenska">SV</button>
+          <button type="button" data-lang="da" lang="da" aria-label="Dansk">DA</button>
+          <button type="button" data-lang="fi" lang="fi" aria-label="Suomi">FI</button>
+          <button type="button" data-lang="en" lang="en" aria-label="English">EN</button>
+        </div>
+      </div>
+      <p id="intro">Oppsett for kappsag når sidene i en mangekant heller ut fra lodd.</p>
+    </header>
+
+    <section class="panel" id="inputs-panel" aria-label="Inndata">
+      <div class="field">
+        <label id="sides-label" for="sides">Antall sider</label>
+        <div class="stepper">
+          <button type="button" id="sides-dec" aria-label="Færre sider">−</button>
+          <input id="sides" type="number" min="3" max="999" step="1" inputmode="numeric" value="4">
+          <button type="button" id="sides-inc" aria-label="Flere sider">+</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="angle-label" for="angle">Vinkel fra vertikal</label>
+        <div class="angle-row">
+          <input id="angle-range" type="range" min="0" max="90" step="0.1" value="45" aria-label="Vinkel fra vertikal">
+          <div class="angle-number">
+            <input id="angle" type="text" inputmode="decimal" value="45,0" autocomplete="off">
+            <span aria-hidden="true">°</span>
+          </div>
+        </div>
+        <div class="scale">
+          <span id="scale-vertical">0° loddrett</span>
+          <span id="scale-flat">90° flatt</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel results" aria-live="polite">
+      <h2 id="setup-heading">Sagoppsett</h2>
+      <div class="result">
+        <span class="result-label" id="miter-label">Gjæring</span>
+        <p class="value" id="miter">—</p>
+        <p class="hint" id="miter-hint">0° er rett tverrkutt, bladet på tvers av anlegget.</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="bevel-label">Bladhelling</span>
+        <p class="value" id="bevel">—</p>
+        <p class="hint" id="bevel-hint">0° er loddrett blad.</p>
+      </div>
+      <p class="explain" id="explain">Begge ender av hvert bord bruker samme vinkler, med gjæringen speilet.</p>
+      <p class="method" id="method">Vinklene leses av etter at de to sideplanene er rotert ned på sagbordet.</p>
+      <p class="limit" id="limit" hidden></p>
+    </section>
+
+    <section class="figures" id="figures-panel" aria-label="Figurer">
+      <figure>
+        <svg id="section-svg" viewBox="0 0 320 210" role="img" aria-labelledby="section-cap"></svg>
+        <figcaption id="section-cap">Tverrsnitt</figcaption>
+      </figure>
+      <figure>
+        <svg id="plan-svg" viewBox="0 0 200 200" role="img" aria-labelledby="plan-cap"></svg>
+        <figcaption id="plan-cap">Ovenfra</figcaption>
+      </figure>
+    </section>
+  </main>
+
+  <script src="site.js"></script>
+  <script>
+    function compoundMiter(sides, angleFromVerticalDeg) {
+      function dot(a, b) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      }
+
+      function cross(a, b) {
+        return [
+          a[1] * b[2] - a[2] * b[1],
+          a[2] * b[0] - a[0] * b[2],
+          a[0] * b[1] - a[1] * b[0]
+        ];
+      }
+
+      function normalize(a) {
+        const len = Math.hypot(a[0], a[1], a[2]);
+        if (len < 1e-12) return null;
+        return [a[0] / len, a[1] / len, a[2] / len];
+      }
+
+      if (!Number.isFinite(sides) || sides < 3 || !Number.isFinite(angleFromVerticalDeg)) {
+        return null;
+      }
+
+      const alpha = angleFromVerticalDeg * Math.PI / 180;
+      const delta = Math.PI / sides;
+      const flatMiter = 180 / sides;
+
+      if (Math.abs(Math.cos(alpha)) <= 1e-10) {
+        return { miter: flatMiter, bevel: 0 };
+      }
+
+      const cosA = Math.cos(alpha);
+      const sinA = Math.sin(alpha);
+      const cosD = Math.cos(delta);
+      const sinD = Math.sin(delta);
+
+      const n1 = [cosA * cosD, -cosA * sinD, sinA];
+      const n2 = [cosA * cosD, cosA * sinD, sinA];
+      const cut = normalize([n1[0] - n2[0], n1[1] - n2[1], n1[2] - n2[2]]);
+      const up = [0, 0, 1];
+      let fence = normalize(cross(up, n1));
+
+      if (!cut || !fence) {
+        return { miter: flatMiter, bevel: 0 };
+      }
+
+      let upSlope = cross(n1, fence);
+      if (upSlope[2] < 0) {
+        fence = [-fence[0], -fence[1], -fence[2]];
+        upSlope = cross(n1, fence);
+      }
+
+      const bevel = Math.asin(Math.min(1, Math.abs(dot(cut, n1)))) * 180 / Math.PI;
+      const miter = Math.atan2(Math.abs(dot(cut, upSlope)), Math.abs(dot(cut, fence))) * 180 / Math.PI;
+      return { miter, bevel };
+    }
+
+    const sidesInput = document.getElementById("sides");
+    const sidesDec = document.getElementById("sides-dec");
+    const sidesInc = document.getElementById("sides-inc");
+    const angleInput = document.getElementById("angle");
+    const angleRange = document.getElementById("angle-range");
+    const miterEl = document.getElementById("miter");
+    const bevelEl = document.getElementById("bevel");
+    const explainEl = document.getElementById("explain");
+    const limitEl = document.getElementById("limit");
+    const sectionSvg = document.getElementById("section-svg");
+    const planSvg = document.getElementById("plan-svg");
+    const sectionCap = document.getElementById("section-cap");
+    const planCap = document.getElementById("plan-cap");
+    const TEXT = {
+      no: {
+        title: "Sammensatt gjæring",
+        intro: "Oppsett for kappsag når sidene i en mangekant heller ut fra lodd.",
+        sides: "Antall sider",
+        fewer: "Færre sider",
+        more: "Flere sider",
+        angle: "Vinkel fra vertikal",
+        vertical: "0° loddrett",
+        flat: "90° flatt",
+        setup: "Sagoppsett",
+        miter: "Gjæring",
+        miterHint: "0° er rett tverrkutt, bladet på tvers av anlegget.",
+        bevel: "Bladhelling",
+        bevelHint: "0° er loddrett blad.",
+        explain: "Begge ender av hvert bord bruker samme vinkler, med gjæringen speilet.",
+        method: "Vinklene leses av etter at de to sideplanene er rotert ned på sagbordet.",
+        invalid: "Bruk minst 3 sider og en vinkel fra 0 til 90.",
+        bevelLimit: "Bladhellingen er over 45°.",
+        miterLimit: "Gjæringen er over 60°.",
+        limitTail: "Mange kappsager rekker ikke så langt.",
+        section: "Tverrsnitt, {angle}° fra lodd",
+        plan: "Ovenfra, {n} sider",
+        plumb: "lodd",
+        language: "Språk",
+        inputs: "Inndata",
+        figures: "Figurer"
+      },
+      sv: {
+        title: "Sammansatt gering",
+        intro: "Inställning för kapsåg när sidorna i en månghörning lutar ut från lod.",
+        sides: "Antal sidor",
+        fewer: "Färre sidor",
+        more: "Fler sidor",
+        angle: "Vinkel från vertikal",
+        vertical: "0° lodrät",
+        flat: "90° platt",
+        setup: "Såginställning",
+        miter: "Gering",
+        miterHint: "0° är ett rakt kap, klingan tvärs emot anslaget.",
+        bevel: "Klinglutning",
+        bevelHint: "0° är lodrät klinga.",
+        explain: "Båda ändarna av varje bräda använder samma vinklar, med geringen speglad.",
+        method: "Vinklarna läses av efter att de två sidplanen har roterats ned på sågbordet.",
+        invalid: "Ange minst 3 sidor och en vinkel från 0 till 90.",
+        bevelLimit: "Klinglutningen är över 45°.",
+        miterLimit: "Geringen är över 60°.",
+        limitTail: "Många kapsågar når inte så långt.",
+        section: "Tvärsnitt, {angle}° från lod",
+        plan: "Ovanifrån, {n} sidor",
+        plumb: "lod",
+        language: "Språk",
+        inputs: "Indata",
+        figures: "Figurer"
+      },
+      da: {
+        title: "Sammensat gering",
+        intro: "Indstilling til kap-geringssav når siderne i en mangekant hælder ud fra lod.",
+        sides: "Antal sider",
+        fewer: "Færre sider",
+        more: "Flere sider",
+        angle: "Vinkel fra lodret",
+        vertical: "0° lodret",
+        flat: "90° fladt",
+        setup: "Savindstilling",
+        miter: "Gering",
+        miterHint: "0° er et lige snit, klingen på tværs af anslaget.",
+        bevel: "Klingehældning",
+        bevelHint: "0° er lodret klinge.",
+        explain: "Begge ender af hvert bræt bruger samme vinkler, med geringen spejlet.",
+        method: "Vinklerne aflæses, efter at de to sideplaner er drejet ned på savbordet.",
+        invalid: "Brug mindst 3 sider og en vinkel fra 0 til 90.",
+        bevelLimit: "Klingehældningen er over 45°.",
+        miterLimit: "Geringen er over 60°.",
+        limitTail: "Mange kap-geringssave kan ikke nå så langt.",
+        section: "Tværsnit, {angle}° fra lod",
+        plan: "Ovenfra, {n} sider",
+        plumb: "lod",
+        language: "Sprog",
+        inputs: "Inddata",
+        figures: "Figurer"
+      },
+      fi: {
+        title: "Yhdistetty jiiri",
+        intro: "Katkaisusirkkelin asetukset, kun monikulmion sivut kallistuvat pystysuunnasta.",
+        sides: "Sivujen määrä",
+        fewer: "Vähemmän sivuja",
+        more: "Enemmän sivuja",
+        angle: "Kulma pystysuunnasta",
+        vertical: "0° pystysuora",
+        flat: "90° vaakasuora",
+        setup: "Saha-asetus",
+        miter: "Jiirikulma",
+        miterHint: "0° on suora katkaisu, terä poikittain vasteeseen nähden.",
+        bevel: "Terän kallistus",
+        bevelHint: "0° on pystysuora terä.",
+        explain: "Laudan molemmat päät käyttävät samoja kulmia, jiiri peilikuvana.",
+        method: "Kulmat luetaan sen jälkeen, kun sivutasot on kierretty sahapöydälle.",
+        invalid: "Anna vähintään 3 sivua ja kulma välillä 0–90.",
+        bevelLimit: "Terän kallistus on yli 45°.",
+        miterLimit: "Jiirikulma on yli 60°.",
+        limitTail: "Moni katkaisusirkkeli ei yllä niin pitkälle.",
+        section: "Poikkileikkaus, {angle}° pystysuunnasta",
+        plan: "Ylhäältä, {n} sivua",
+        plumb: "pysty",
+        language: "Kieli",
+        inputs: "Syötteet",
+        figures: "Kuvat"
+      },
+      en: {
+        title: "Compound miter",
+        intro: "Miter saw setup when the sides of a polygon lean out from vertical.",
+        sides: "Number of sides",
+        fewer: "Fewer sides",
+        more: "More sides",
+        angle: "Angle from vertical",
+        vertical: "0° vertical",
+        flat: "90° flat",
+        setup: "Saw setup",
+        miter: "Miter",
+        miterHint: "0° is a square cut, blade square to the fence.",
+        bevel: "Bevel",
+        bevelHint: "0° is a vertical blade.",
+        explain: "Both ends of each board use the same angles, with the miter mirrored.",
+        method: "The angles are read after the two side planes are rotated down onto the saw table.",
+        invalid: "Use at least 3 sides and an angle from 0 to 90.",
+        bevelLimit: "The bevel is over 45°.",
+        miterLimit: "The miter is over 60°.",
+        limitTail: "Many miter saws cannot reach that far.",
+        section: "Section, {angle}° from vertical",
+        plan: "From above, {n} sides",
+        plumb: "plumb",
+        language: "Language",
+        inputs: "Inputs",
+        figures: "Figures"
+      }
+    };
+
+    function t(key) {
+      return TEXT[Workshop.lang()][key];
+    }
+
+    function decimalSep() {
+      return Workshop.decimalSep();
+    }
+
+    function formatDeg(value) {
+      return value.toFixed(2).replace(".", decimalSep()) + "°";
+    }
+
+    function formatAngleInput(value) {
+      return value.toFixed(1).replace(".", decimalSep());
+    }
+
+    function snapAngle(value) {
+      const nearest = Math.round(value / 5) * 5;
+      if (Math.abs(value - nearest) <= 0.25 + 1e-9) {
+        return Math.min(90, Math.max(0, nearest));
+      }
+      return value;
+    }
+
+    function readSides() {
+      const value = Number(sidesInput.value);
+      if (!Number.isInteger(value) || value < 3 || value > 999) return null;
+      return value;
+    }
+
+    function parseAngle(text) {
+      const raw = text.trim().replace(",", ".");
+      if (raw === "" || raw === ".") return null;
+      if (!/^\d+(\.\d*)?$/.test(raw)) return null;
+      const value = Number(raw);
+      if (!Number.isFinite(value) || value < 0 || value > 90) return null;
+      return value;
+    }
+
+    function readAngle() {
+      const value = parseAngle(angleInput.value);
+      if (value === null) return null;
+      return snapAngle(value);
+    }
+
+    function applyPage() {
+      document.title = t("title");
+      document.getElementById("title").textContent = t("title");
+      document.getElementById("intro").textContent = t("intro");
+      document.getElementById("langs").setAttribute("aria-label", t("language"));
+      document.getElementById("inputs-panel").setAttribute("aria-label", t("inputs"));
+      document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
+      document.getElementById("sides-label").textContent = t("sides");
+      sidesDec.setAttribute("aria-label", t("fewer"));
+      sidesInc.setAttribute("aria-label", t("more"));
+      document.getElementById("angle-label").textContent = t("angle");
+      angleRange.setAttribute("aria-label", t("angle"));
+      document.getElementById("scale-vertical").textContent = t("vertical");
+      document.getElementById("scale-flat").textContent = t("flat");
+      document.getElementById("setup-heading").textContent = t("setup");
+      document.getElementById("miter-label").textContent = t("miter");
+      document.getElementById("miter-hint").textContent = t("miterHint");
+      document.getElementById("bevel-label").textContent = t("bevel");
+      document.getElementById("bevel-hint").textContent = t("bevelHint");
+      document.getElementById("method").textContent = t("method");
+      const parsed = parseAngle(angleInput.value);
+      if (parsed !== null && !/[.,]$/.test(angleInput.value.trim())) {
+        angleInput.value = formatAngleInput(snapAngle(parsed));
+      }
+      render();
+    }
+
+    function renderSection(alphaDeg) {
+      const alpha = alphaDeg * Math.PI / 180;
+      const sin = Math.sin(alpha);
+      const cos = Math.cos(alpha);
+      const cx = 148;
+      const baseY = 168;
+      const len = 96;
+      const half = 30;
+      const leftB = [cx - half, baseY];
+      const rightB = [cx + half, baseY];
+      const leftT = [leftB[0] - sin * len, baseY - cos * len];
+      const rightT = [rightB[0] + sin * len, baseY - cos * len];
+
+      function pt(p) {
+        return p[0].toFixed(1) + "," + p[1].toFixed(1);
+      }
+
+      const arcR = 42;
+      const arcStart = [rightB[0], rightB[1] - arcR];
+      const arcEnd = [rightB[0] + sin * arcR, rightB[1] - cos * arcR];
+      const label = [
+        arcEnd[0] + cos * 22,
+        arcEnd[1] + sin * 22
+      ];
+      if (label[1] > baseY - 4) {
+        label[0] = (rightB[0] + rightT[0]) / 2;
+        label[1] = baseY - 28;
+      }
+      const labelText = formatAngleInput(alphaDeg) + "°";
+
+      sectionSvg.innerHTML =
+        '<line class="ground" x1="16" y1="' + (baseY + 16) + '" x2="304" y2="' + (baseY + 16) + '"/>' +
+        '<polygon class="void" points="' + [leftB, leftT, rightT, rightB].map(pt).join(" ") + '"/>' +
+        '<line class="board" x1="' + leftB[0] + '" y1="' + leftB[1] + '" x2="' + leftT[0].toFixed(1) + '" y2="' + leftT[1].toFixed(1) + '"/>' +
+        '<line class="board" x1="' + rightB[0] + '" y1="' + rightB[1] + '" x2="' + rightT[0].toFixed(1) + '" y2="' + rightT[1].toFixed(1) + '"/>' +
+        '<line class="plumb" x1="' + rightB[0] + '" y1="' + rightB[1] + '" x2="' + rightB[0] + '" y2="' + (rightB[1] - len - 8) + '"/>' +
+        '<path class="arc" d="M ' + arcStart[0] + " " + arcStart[1] +
+          " A " + arcR + " " + arcR + " 0 0 1 " + arcEnd[0].toFixed(1) + " " + arcEnd[1].toFixed(1) + '"/>' +
+        '<text class="plumb-label" x="' + (rightB[0] - 8) + '" y="' + (rightB[1] - len - 12) + '" text-anchor="end">' + t("plumb") + "</text>" +
+        '<text class="angle-label" x="' + label[0].toFixed(1) + '" y="' + label[1].toFixed(1) + '" text-anchor="start">' + labelText + "</text>";
+    }
+
+    function renderPlan(sides) {
+      const cx = 100;
+      const cy = 100;
+      const radius = 78;
+      const points = [];
+      const start = -Math.PI / 2 + Math.PI / sides;
+      for (let i = 0; i < sides; i += 1) {
+        const ang = start + (i * 2 * Math.PI) / sides;
+        points.push(
+          (cx + radius * Math.cos(ang)).toFixed(1) + "," +
+          (cy + radius * Math.sin(ang)).toFixed(1)
+        );
+      }
+      const jointX = (cx + radius * Math.cos(start)).toFixed(1);
+      const jointY = (cy + radius * Math.sin(start)).toFixed(1);
+      planSvg.innerHTML =
+        '<polygon class="plan-shape" points="' + points.join(" ") + '"/>' +
+        '<circle class="plan-joint" cx="' + jointX + '" cy="' + jointY + '" r="4.5"/>';
+    }
+
+    function render() {
+      const sides = readSides();
+      const angle = readAngle();
+      sidesDec.disabled = sides !== null && sides <= 3;
+
+      if (sides === null || angle === null) {
+        miterEl.textContent = "—";
+        bevelEl.textContent = "—";
+        explainEl.textContent = t("invalid");
+        limitEl.hidden = true;
+        limitEl.textContent = "";
+        return;
+      }
+
+      if (document.activeElement !== angleRange) {
+        angleRange.value = String(angle);
+      }
+
+      const result = compoundMiter(sides, angle);
+      miterEl.textContent = formatDeg(result.miter);
+      bevelEl.textContent = formatDeg(result.bevel);
+      explainEl.textContent = t("explain");
+
+      const notes = [];
+      if (result.bevel > 45) notes.push(t("bevelLimit"));
+      if (result.miter > 60) notes.push(t("miterLimit"));
+      if (notes.length) {
+        limitEl.hidden = false;
+        limitEl.textContent = notes.join(" ") + " " + t("limitTail");
+      } else {
+        limitEl.hidden = true;
+        limitEl.textContent = "";
+      }
+
+      renderSection(angle);
+      renderPlan(sides);
+      sectionCap.textContent = t("section").replace("{angle}", formatAngleInput(angle));
+      planCap.textContent = t("plan").replace("{n}", String(sides));
+    }
+
+    sidesInput.addEventListener("input", render);
+    angleInput.addEventListener("input", function () {
+      const raw = angleInput.value;
+      const parsed = parseAngle(raw);
+      if (parsed !== null && !/[.,]$/.test(raw.trim())) {
+        const snapped = snapAngle(parsed);
+        if (Math.abs(snapped - parsed) > 1e-9) {
+          angleInput.value = formatAngleInput(snapped);
+        }
+      }
+      render();
+    });
+    angleRange.addEventListener("input", function () {
+      angleInput.value = formatAngleInput(snapAngle(Number(angleRange.value)));
+      render();
+    });
+    angleRange.addEventListener("change", function () {
+      const snapped = snapAngle(Number(angleRange.value));
+      angleRange.value = String(snapped);
+      angleInput.value = formatAngleInput(snapped);
+      render();
+    });
+
+    sidesDec.addEventListener("click", function () {
+      const sides = readSides();
+      sidesInput.value = String(sides === null ? 3 : Math.max(3, sides - 1));
+      render();
+    });
+
+    sidesInc.addEventListener("click", function () {
+      const sides = readSides();
+      sidesInput.value = String(sides === null ? 3 : Math.min(999, sides + 1));
+      render();
+    });
+
+    Workshop.init({ page: "miter", onChange: applyPage });
+  </script>
+</body>
+</html>
