@@ -11,6 +11,8 @@
       miterBlurb: "Gjæring og bladhelling for en mangekant.",
       cove: "Hulkil",
       coveBlurb: "Sporprofil og oppsett for et buet spor på sagen.",
+      dovetail: "Svalehale",
+      dovetailBlurb: "Pinner og haler for svalehale og fingerskjøt.",
       language: "Språk"
     },
     sv: {
@@ -22,6 +24,8 @@
       miterBlurb: "Gering och klinglutning för en månghörning.",
       cove: "Hålkäl",
       coveBlurb: "Spårprofil och inställning för ett böjt spår på sågen.",
+      dovetail: "Laxstjärt",
+      dovetailBlurb: "Tappar och laxstjärtar för sinkning och fingerskarv.",
       language: "Språk"
     },
     da: {
@@ -33,6 +37,8 @@
       miterBlurb: "Gering og klingehældning til en mangekant.",
       cove: "Hulkel",
       coveBlurb: "Sporprofil og indstilling til et buet spor på saven.",
+      dovetail: "Svalehale",
+      dovetailBlurb: "Tappe og haler til svalehale og fingersamling.",
       language: "Sprog"
     },
     fi: {
@@ -44,6 +50,8 @@
       miterBlurb: "Jiirikulma ja terän kallistus monikulmiolle.",
       cove: "Kouru",
       coveBlurb: "Uran profiili ja asetukset kaarevaan sahaukseen.",
+      dovetail: "Lohenpyrstö",
+      dovetailBlurb: "Tapit ja lohenpyrstöt sinkkaukseen ja sormiliitokseen.",
       language: "Kieli"
     },
     en: {
@@ -55,6 +63,8 @@
       miterBlurb: "Miter and bevel for a polygon.",
       cove: "Cove cut",
       coveBlurb: "Profile and setup for a curved groove on the saw.",
+      dovetail: "Dovetail",
+      dovetailBlurb: "Pins and tails for dovetails and box joints.",
       language: "Language"
     }
   };
@@ -119,6 +129,10 @@
     if (coveName) coveName.textContent = text("cove");
     var coveBlurb = document.getElementById("link-cove-blurb");
     if (coveBlurb) coveBlurb.textContent = text("coveBlurb");
+    var dovetailName = document.getElementById("link-dovetail-name");
+    if (dovetailName) dovetailName.textContent = text("dovetail");
+    var dovetailBlurb = document.getElementById("link-dovetail-blurb");
+    if (dovetailBlurb) dovetailBlurb.textContent = text("dovetailBlurb");
     if (page === "home") document.title = text("siteTitle");
   }
 

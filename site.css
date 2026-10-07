@@ -339,6 +339,11 @@ svg .plan-shape, svg .stock { fill: #2a3324; stroke: var(--line); stroke-width: 
 svg .plan-joint, svg .apex { fill: var(--brass); }
 svg .cove-curve { fill: none; stroke: var(--brass); stroke-width: 2.6; stroke-linejoin: round; }
 svg .blade { stroke: var(--line); stroke-linecap: butt; }
+svg .joint-board { fill: #2a3324; stroke: var(--line); stroke-width: 1.6; }
+svg .joint-pin { fill: #8a6230; stroke: #f4f1e8; stroke-width: 1.4; stroke-linejoin: round; }
+svg .joint-tail { fill: #c4a15a; stroke: #f4f1e8; stroke-width: 1.4; stroke-linejoin: round; }
+svg .joint-seam { fill: none; stroke: var(--brass-deep); stroke-width: 2; }
+svg .joint-floor { fill: none; stroke: var(--brass); stroke-width: 1.8; stroke-dasharray: 5 4; }
 
 @media (max-width: 640px) {
   .figures { grid-template-columns: 1fr; }

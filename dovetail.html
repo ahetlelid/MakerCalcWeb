@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Svalehale</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <nav class="sitenav" id="sitenav">
+      <a href="index.html" data-nav="home">Verktøy</a>
+      <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
+      <a href="cove.html" data-nav="cove">Hulkil</a>
+      <a href="dovetail.html" data-nav="dovetail">Svalehale</a>
+      <select id="langs" aria-label="Språk">
+        <option value="no" lang="no">Norsk</option>
+        <option value="sv" lang="sv">Svenska</option>
+        <option value="da" lang="da">Dansk</option>
+        <option value="fi" lang="fi">Suomi</option>
+        <option value="en" lang="en">English</option>
+      </select>
+    </nav>
+    <header>
+      <h1 id="title">Svalehale</h1>
+      <p id="intro">Oppsett for svalehale og fingerskjøt. Bredde, tykkelse og antall haler bestemmer pinnene.</p>
+    </header>
+
+    <section class="panel" id="joint-panel">
+      <h2 id="type-heading">Skjøt</h2>
+      <div class="choices" id="type-choices">
+        <button type="button" data-type="box">Fingerskjøt</button>
+        <button type="button" data-type="through" aria-pressed="true">Gjennomgående</button>
+        <button type="button" data-type="half">Halvskjult</button>
+      </div>
+      <div class="field">
+        <label id="width-label" for="width">Bordbredde</label>
+        <div class="stepper">
+          <button type="button" id="width-dec" aria-label="Smalere">−</button>
+          <div class="measure">
+            <input id="width" type="text" inputmode="decimal" value="120" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="width-inc" aria-label="Bredere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="thickness-label" for="thickness">Bordtykkelse</label>
+        <div class="stepper">
+          <button type="button" id="thickness-dec" aria-label="Tynnere">−</button>
+          <div class="measure">
+            <input id="thickness" type="text" inputmode="decimal" value="18" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="thickness-inc" aria-label="Tykkere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="tails-label" for="tails">Antall haler</label>
+        <div class="stepper">
+          <button type="button" id="tails-dec" aria-label="Færre">−</button>
+          <div class="measure">
+            <input id="tails" type="text" inputmode="numeric" value="4" autocomplete="off">
+          </div>
+          <button type="button" id="tails-inc" aria-label="Flere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="pin-label" for="pin">Smal pinne</label>
+        <div class="stepper">
+          <button type="button" id="pin-dec" aria-label="Smalere">−</button>
+          <div class="measure">
+            <input id="pin" type="text" inputmode="decimal" value="8" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="pin-inc" aria-label="Bredere">+</button>
+        </div>
+        <p class="note" id="pin-hint">Bredden på den smale siden av pinnen.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="angle-panel">
+      <h2 id="angle-heading">Vinkel</h2>
+      <div class="choices" id="angle-choices">
+        <button type="button" data-angle="0">0°</button>
+        <button type="button" data-angle="7.13" aria-pressed="true">1:8</button>
+        <button type="button" data-angle="9.46">1:6</button>
+        <button type="button" data-angle="custom">Eget</button>
+      </div>
+      <div class="field">
+        <label id="angle-label" for="angle">Pinnevinkel</label>
+        <div class="stepper">
+          <button type="button" id="angle-dec" aria-label="Mindre">−</button>
+          <div class="measure">
+            <input id="angle" type="text" inputmode="decimal" value="7,13" autocomplete="off">
+            <span>°</span>
+          </div>
+          <button type="button" id="angle-inc" aria-label="Mer">+</button>
+        </div>
+        <p class="note" id="angle-note">1:8 er 7,13°. 1:6 er 9,46°.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="floor-panel" hidden>
+      <h2 id="floor-heading">Bunn</h2>
+      <div class="field">
+        <label id="floor-label" for="floor">Bunn</label>
+        <div class="stepper">
+          <button type="button" id="floor-dec" aria-label="Tynnere">−</button>
+          <div class="measure">
+            <input id="floor" type="text" inputmode="decimal" value="6,0" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="floor-inc" aria-label="Tykkere">+</button>
+        </div>
+        <p class="note" id="floor-hint">Tykkelsen som står igjen på forsiden.</p>
+      </div>
+    </section>
+
+    <section class="panel results" id="results-panel" aria-live="polite">
+      <h2 id="results-heading">Mål</h2>
+      <div class="result">
+        <span class="result-label" id="pin-wide-label">Vid pinne</span>
+        <p class="value" id="pin-wide">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="tail-wide-label">Vid hale</span>
+        <p class="value" id="tail-wide">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="depth-label">Dybde</span>
+        <p class="value" id="depth">—</p>
+        <p class="hint" id="depth-hint">Så langt pinnene går inn.</p>
+      </div>
+      <p class="limit" id="limit" hidden></p>
+    </section>
+
+    <section class="figures" id="figures-panel">
+      <figure>
+        <svg id="face-svg" viewBox="0 0 320 340" role="img" aria-labelledby="face-cap"></svg>
+        <figcaption id="face-cap">Synsflate</figcaption>
+      </figure>
+      <figure>
+        <svg id="corner-svg" viewBox="0 0 320 200" role="img" aria-labelledby="corner-cap"></svg>
+        <figcaption id="corner-cap">Hjørne</figcaption>
+      </figure>
+    </section>
+  </main>
+  <script src="site.js"></script>
+  <script>
+    var TEXT = {
+      no: {
+        title: "Svalehale",
+        intro: "Oppsett for svalehale og fingerskjøt. Bredde, tykkelse og antall haler bestemmer pinnene.",
+        typeHeading: "Skjøt",
+        box: "Fingerskjøt",
+        through: "Gjennomgående",
+        half: "Halvskjult",
+        width: "Bordbredde",
+        thickness: "Bordtykkelse",
+        tails: "Antall haler",
+        pin: "Smal pinne",
+        pinHint: "Bredden på den smale siden av pinnen.",
+        narrower: "Smalere",
+        wider: "Bredere",
+        thinner: "Tynnere",
+        thicker: "Tykkere",
+        fewer: "Færre",
+        more: "Flere",
+        angleHeading: "Vinkel",
+        angle: "Pinnevinkel",
+        angleNote: "1:8 er 7,13°. 1:6 er 9,46°.",
+        custom: "Eget",
+        less: "Mindre",
+        greater: "Mer",
+        floorHeading: "Bunn",
+        floor: "Bunn",
+        floorHint: "Tykkelsen som står igjen på forsiden.",
+        results: "Mål",
+        pinWide: "Vid pinne",
+        tailWide: "Vid hale",
+        depth: "Dybde",
+        depthHint: "Så langt pinnene går inn.",
+        face: "Synsflate",
+        pinsFace: "Pinnebord",
+        tailsFace: "Halebord",
+        corner: "Hjørne",
+        invalid: "Sjekk målene. Bredde, tykkelse og pinnebredde må være større enn null.",
+        pinsFit: "Pinnene er bredere enn bordet.",
+        noDepth: "Bunnen må være mindre enn bordtykkelsen."
+      },
+      sv: {
+        title: "Laxstjärt",
+        intro: "Inställning för laxstjärt och fingerskarv. Bredd, tjocklek och antal bestämmer tapparna.",
+        typeHeading: "Fog",
+        box: "Fingerskarv",
+        through: "Genomgående",
+        half: "Halvförtäckt",
+        width: "Brädbredd",
+        thickness: "Brädtjocklek",
+        tails: "Antal laxstjärtar",
+        pin: "Smal tapp",
+        pinHint: "Bredden på tappens smala sida.",
+        narrower: "Smalare",
+        wider: "Bredare",
+        thinner: "Tunnare",
+        thicker: "Tjockare",
+        fewer: "Färre",
+        more: "Fler",
+        angleHeading: "Vinkel",
+        angle: "Tappvinkel",
+        angleNote: "1:8 är 7,13°. 1:6 är 9,46°.",
+        custom: "Egen",
+        less: "Mindre",
+        greater: "Mer",
+        floorHeading: "Botten",
+        floor: "Botten",
+        floorHint: "Tjockleken som blir kvar på framsidan.",
+        results: "Mått",
+        pinWide: "Bred tapp",
+        tailWide: "Bred laxstjärt",
+        depth: "Djup",
+        depthHint: "Så långt tapparna går in.",
+        face: "Synlig sida",
+        pinsFace: "Tappbräda",
+        tailsFace: "Laxstjärtsbräda",
+        corner: "Hörn",
+        invalid: "Kontrollera måtten. Bredd, tjocklek och tappbredd måste vara större än noll.",
+        pinsFit: "Tapparna är bredare än brädan.",
+        noDepth: "Botten måste vara mindre än brädtjockleken."
+      },
+      da: {
+        title: "Svalehale",
+        intro: "Indstilling til svalehale og fingersamling. Bredde, tykkelse og antal haler bestemmer tappene.",
+        typeHeading: "Samling",
+        box: "Fingersamling",
+        through: "Gennemgående",
+        half: "Halvskjult",
+        width: "Brætbredde",
+        thickness: "Brættykkelse",
+        tails: "Antal haler",
+        pin: "Smal tap",
+        pinHint: "Bredden på tappens smalle side.",
+        narrower: "Smallere",
+        wider: "Bredere",
+        thinner: "Tyndere",
+        thicker: "Tykkere",
+        fewer: "Færre",
+        more: "Flere",
+        angleHeading: "Vinkel",
+        angle: "Tapvinkel",
+        angleNote: "1:8 er 7,13°. 1:6 er 9,46°.",
+        custom: "Egen",
+        less: "Mindre",
+        greater: "Mere",
+        floorHeading: "Bund",
+        floor: "Bund",
+        floorHint: "Tykkelsen der bliver tilbage på forsiden.",
+        results: "Mål",
+        pinWide: "Bred tap",
+        tailWide: "Bred hale",
+        depth: "Dybde",
+        depthHint: "Så langt tappene går ind.",
+        face: "Synsflade",
+        pinsFace: "Tapbræt",
+        tailsFace: "Halebræt",
+        corner: "Hjørne",
+        invalid: "Tjek målene. Bredde, tykkelse og tapbredde skal være større end nul.",
+        pinsFit: "Tappene er bredere end brættet.",
+        noDepth: "Bunden skal være mindre end brættykkelsen."
+      },
+      fi: {
+        title: "Lohenpyrstö",
+        intro: "Asetus lohenpyrstölle ja sormiliitokselle. Leveys, paksuus ja määrä määräävät tapit.",
+        typeHeading: "Liitos",
+        box: "Sormiliitos",
+        through: "Läpimenevä",
+        half: "Puolisokea",
+        width: "Laudan leveys",
+        thickness: "Laudan paksuus",
+        tails: "Lohenpyrstöjen määrä",
+        pin: "Kapea tappi",
+        pinHint: "Tapin kapean sivun leveys.",
+        narrower: "Kapeampi",
+        wider: "Leveämpi",
+        thinner: "Ohuempi",
+        thicker: "Paksumpi",
+        fewer: "Vähemmän",
+        more: "Enemmän",
+        angleHeading: "Kulma",
+        angle: "Tapin kulma",
+        angleNote: "1:8 on 7,13°. 1:6 on 9,46°.",
+        custom: "Oma",
+        less: "Pienempi",
+        greater: "Suurempi",
+        floorHeading: "Pääty",
+        floor: "Pääty",
+        floorHint: "Etupinnalle jäävä paksuus.",
+        results: "Mitat",
+        pinWide: "Leveä tappi",
+        tailWide: "Leveä lohenpyrstö",
+        depth: "Syvyys",
+        depthHint: "Näin pitkälle tapit ulottuvat.",
+        face: "Näkyvä sivu",
+        pinsFace: "Tappilauta",
+        tailsFace: "Lohenpyrstölauta",
+        corner: "Kulma",
+        invalid: "Tarkista mitat. Leveyden, paksuuden ja tapin leveyden on oltava suurempia kuin nolla.",
+        pinsFit: "Tapit ovat lautaa leveämpiä.",
+        noDepth: "Päädyn on oltava laudan paksuutta pienempi."
+      },
+      en: {
+        title: "Dovetail",
+        intro: "Layout for dovetails and box joints. Width, thickness and tail count set the pins.",
+        typeHeading: "Joint",
+        box: "Box joint",
+        through: "Through",
+        half: "Half-blind",
+        width: "Board width",
+        thickness: "Board thickness",
+        tails: "Number of tails",
+        pin: "Narrow pin",
+        pinHint: "Width of the narrow side of the pin.",
+        narrower: "Narrower",
+        wider: "Wider",
+        thinner: "Thinner",
+        thicker: "Thicker",
+        fewer: "Fewer",
+        more: "More",
+        angleHeading: "Angle",
+        angle: "Pin angle",
+        angleNote: "1:8 is 7.13°. 1:6 is 9.46°.",
+        custom: "Custom",
+        less: "Less",
+        greater: "More",
+        floorHeading: "Floor",
+        floor: "Floor",
+        floorHint: "Thickness left on the show face.",
+        results: "Sizes",
+        pinWide: "Wide pin",
+        tailWide: "Wide tail",
+        depth: "Depth",
+        depthHint: "How far the pins reach.",
+        face: "Face",
+        pinsFace: "Pins board",
+        tailsFace: "Tails board",
+        corner: "Corner",
+        invalid: "Check the sizes. Width, thickness and pin width must be greater than zero.",
+        pinsFit: "The pins are wider than the board.",
+        noDepth: "The floor must be less than the board thickness."
+      }
+    };
+
+    var state = {
+      type: "through",
+      w: 120,
+      t: 18,
+      n: 4,
+      pb: 8,
+      angle: 7.13,
+      floor: 6
+    };
+
+    var fields = {
+      width: document.getElementById("width"),
+      thickness: document.getElementById("thickness"),
+      tails: document.getElementById("tails"),
+      pin: document.getElementById("pin"),
+      angle: document.getElementById("angle"),
+      floor: document.getElementById("floor")
+    };
+
+    function t(key) {
+      return TEXT[Workshop.lang()][key];
+    }
+
+    function formatMm(value, digits) {
+      var places = digits;
+      if (places == null) {
+        places = Math.abs(value - Math.round(value)) < 1e-6 ? 0 : 1;
+      }
+      return Workshop.formatNumber(value, places);
+    }
+
+    function buildLayout() {
+      var w = state.w;
+      var thick = state.t;
+      var n = Math.round(state.n);
+      var pb = state.pb;
+      var angle = state.type === "box" ? 0 : state.angle;
+      var pinDepth = state.type === "half"
+        ? Math.min(thick, Math.max(0, thick - state.floor))
+        : thick;
+      var slope = pinDepth * Math.tan(angle * Math.PI / 180);
+      if (!(w > 0) || !(thick > 0) || !(n >= 1) || !(pb > 0)) {
+        return { error: "invalid", pinDepth: pinDepth };
+      }
+      if (!(pinDepth > 0)) return { error: "noDepth", pinDepth: 0 };
+      var pinsTotal = pb * n;
+      if (pinsTotal >= w - 1e-6) return { error: "pinsFit", pinDepth: pinDepth };
+      var tailBase = (w - pinsTotal) / n;
+      var pins = [{
+        baseLeft: 0,
+        baseRight: pb / 2,
+        topLeft: 0,
+        topRight: pb / 2 + slope
+      }];
+      var tails = [];
+      var cursor = pb / 2;
+      for (var i = 0; i < n; i += 1) {
+        tails.push({
+          baseLeft: cursor,
+          baseRight: cursor + tailBase,
+          topLeft: cursor + slope,
+          topRight: cursor + tailBase - slope
+        });
+        cursor += tailBase;
+        if (i < n - 1) {
+          pins.push({
+            baseLeft: cursor,
+            baseRight: cursor + pb,
+            topLeft: cursor - slope,
+            topRight: cursor + pb + slope
+          });
+          cursor += pb;
+        }
+      }
+      pins.push({
+        baseLeft: cursor,
+        baseRight: w,
+        topLeft: cursor - slope,
+        topRight: w
+      });
+      return {
+        pins: pins,
+        tails: tails,
+        pinDepth: pinDepth,
+        pinWide: pb + 2 * slope,
+        tailWide: tailBase
+      };
+    }
+
+    function writeField(el, value, digits) {
+      if (document.activeElement === el) return;
+      el.value = formatMm(value, digits);
+    }
+
+    function showError(code) {
+      document.getElementById("pin-wide").textContent = "—";
+      document.getElementById("tail-wide").textContent = "—";
+      document.getElementById("depth").textContent = "—";
+      var limit = document.getElementById("limit");
+      limit.hidden = false;
+      limit.textContent = t(code);
+      document.getElementById("face-svg").innerHTML = "";
+      document.getElementById("corner-svg").innerHTML = "";
+    }
+
+    function trapPoints(solid, X, Y, depth) {
+      return X(solid.baseLeft).toFixed(1) + "," + Y(0).toFixed(1) + " " +
+        X(solid.baseRight).toFixed(1) + "," + Y(0).toFixed(1) + " " +
+        X(solid.topRight).toFixed(1) + "," + Y(depth).toFixed(1) + " " +
+        X(solid.topLeft).toFixed(1) + "," + Y(depth).toFixed(1);
+    }
+
+    function renderFace(layout) {
+      var svg = document.getElementById("face-svg");
+      var depth = Math.max(layout.pinDepth, 0.1);
+      function panel(solids, klass, label, top) {
+        var left = 28;
+        var right = 292;
+        var boxTop = top + 22;
+        var boxH = 124;
+        var scale = Math.min((right - left) / state.w, boxH / depth);
+        var drawnW = state.w * scale;
+        var drawnH = depth * scale;
+        var ox = left + ((right - left) - drawnW) / 2;
+        var oy = boxTop + (boxH - drawnH) / 2;
+        function X(mm) { return ox + mm * scale; }
+        function Y(mm) { return oy + mm * scale; }
+        var html = '<text class="small-label" x="160" y="' + (top + 16) + '" text-anchor="middle">' + label + "</text>";
+        html += '<rect class="joint-board" x="' + X(0).toFixed(1) + '" y="' + Y(0).toFixed(1) +
+          '" width="' + drawnW.toFixed(1) + '" height="' + Math.max(drawnH, 1).toFixed(1) + '"/>';
+        for (var i = 0; i < solids.length; i += 1) {
+          html += '<polygon class="' + klass + '" points="' + trapPoints(solids[i], X, Y, depth) + '"/>';
+        }
+        return html;
+      }
+      svg.innerHTML =
+        panel(layout.pins, "joint-pin", t("pinsFace"), 8) +
+        panel(layout.tails, "joint-tail", t("tailsFace"), 168);
+    }
+
+    function renderCorner(layout) {
+      var svg = document.getElementById("corner-svg");
+      var thick = Math.max(state.t, 0.1);
+      var arm = thick * 2.5;
+      var worldW = arm + thick;
+      var worldH = arm + thick;
+      var left = 24;
+      var right = 296;
+      var top = 12;
+      var bottom = 188;
+      var scale = Math.min((right - left) / worldW, (bottom - top) / worldH);
+      var ox = left + ((right - left) - worldW * scale) / 2;
+      var oy = top + ((bottom - top) - worldH * scale) / 2;
+      function X(mm) { return ox + mm * scale; }
+      function Y(mm) { return oy + mm * scale; }
+      var mark = Y(arm - layout.pinDepth);
+      svg.innerHTML =
+        '<rect class="joint-board" x="' + X(0).toFixed(1) + '" y="' + Y(arm).toFixed(1) +
+          '" width="' + (worldW * scale).toFixed(1) + '" height="' + (thick * scale).toFixed(1) + '"/>' +
+        '<rect class="joint-tail" x="' + X(0).toFixed(1) + '" y="' + Y(0).toFixed(1) +
+          '" width="' + (thick * scale).toFixed(1) + '" height="' + ((arm + thick) * scale).toFixed(1) + '"/>' +
+        '<line class="joint-seam" x1="' + X(0).toFixed(1) + '" y1="' + Y(arm).toFixed(1) +
+          '" x2="' + X(thick).toFixed(1) + '" y2="' + Y(arm).toFixed(1) + '"/>' +
+        '<line class="joint-floor" x1="' + X(0).toFixed(1) + '" y1="' + mark.toFixed(1) +
+          '" x2="' + X(thick).toFixed(1) + '" y2="' + mark.toFixed(1) + '"/>';
+    }
+
+    function render() {
+      if (state.floor < 0) state.floor = 0;
+      if (state.floor > state.t) state.floor = state.t;
+      if (state.type === "box") state.angle = 0;
+      var layout = buildLayout();
+      writeField(fields.width, state.w);
+      writeField(fields.thickness, state.t);
+      writeField(fields.tails, state.n, 0);
+      writeField(fields.pin, state.pb);
+      writeField(fields.angle, state.type === "box" ? 0 : state.angle, 2);
+      writeField(fields.floor, state.floor, 1);
+      var types = document.querySelectorAll("#type-choices button");
+      for (var i = 0; i < types.length; i += 1) {
+        types[i].setAttribute("aria-pressed", types[i].getAttribute("data-type") === state.type ? "true" : "false");
+        types[i].textContent = t(types[i].getAttribute("data-type"));
+      }
+      var angleButtons = document.querySelectorAll("#angle-choices button");
+      for (var a = 0; a < angleButtons.length; a += 1) {
+        var preset = angleButtons[a].getAttribute("data-angle");
+        var on = preset === "custom"
+          ? state.type !== "box" && Math.abs(state.angle - 7.13) >= 0.02 &&
+            Math.abs(state.angle - 9.46) >= 0.02 && Math.abs(state.angle) >= 0.01
+          : state.type !== "box"
+            ? Math.abs(state.angle - Number(preset)) < (preset === "0" ? 0.01 : 0.02)
+            : preset === "0";
+        angleButtons[a].setAttribute("aria-pressed", on ? "true" : "false");
+        if (preset === "custom") angleButtons[a].textContent = t("custom");
+      }
+      document.getElementById("floor-panel").hidden = state.type !== "half";
+      document.getElementById("width-dec").disabled = state.w <= 1;
+      document.getElementById("width-inc").disabled = state.w >= 999;
+      document.getElementById("thickness-dec").disabled = state.t <= 1;
+      document.getElementById("thickness-inc").disabled = state.t >= 999;
+      document.getElementById("tails-dec").disabled = state.n <= 1;
+      document.getElementById("tails-inc").disabled = state.n >= 40;
+      document.getElementById("pin-dec").disabled = state.pb <= 1;
+      document.getElementById("pin-inc").disabled = state.pb >= 999;
+      document.getElementById("angle-dec").disabled = state.type === "box" || state.angle <= 0;
+      document.getElementById("angle-inc").disabled = state.type === "box" || state.angle >= 60;
+      document.getElementById("floor-dec").disabled = state.floor <= 0;
+      document.getElementById("floor-inc").disabled = state.floor >= state.t;
+      fields.angle.disabled = state.type === "box";
+      saveState();
+      if (layout.error) {
+        showError(layout.error);
+        return;
+      }
+      document.getElementById("pin-wide").textContent = formatMm(layout.pinWide, 1) + " mm";
+      document.getElementById("tail-wide").textContent = formatMm(layout.tailWide, 1) + " mm";
+      document.getElementById("depth").textContent = formatMm(layout.pinDepth, 1) + " mm";
+      document.getElementById("limit").hidden = true;
+      renderFace(layout);
+      renderCorner(layout);
+    }
+
+    function saveState() {
+      if (!(state.w > 0) || !(state.t > 0) || !(state.n >= 1) || !(state.pb > 0)) return;
+      try {
+        localStorage.setItem("makercalc-dovetail", JSON.stringify({
+          type: state.type,
+          w: state.w,
+          t: state.t,
+          n: state.n,
+          pb: state.pb,
+          angle: state.angle,
+          floor: state.floor
+        }));
+      } catch (err) {
+        /* keep the values for this visit */
+      }
+    }
+
+    function loadState() {
+      try {
+        var raw = localStorage.getItem("makercalc-dovetail");
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (data.type === "box" || data.type === "through" || data.type === "half") state.type = data.type;
+        if (data.w > 0) state.w = data.w;
+        if (data.t > 0) state.t = data.t;
+        if (data.n >= 1) state.n = data.n;
+        if (data.pb > 0) state.pb = data.pb;
+        if (typeof data.angle === "number" && isFinite(data.angle)) state.angle = data.angle;
+        if (typeof data.floor === "number" && isFinite(data.floor)) state.floor = data.floor;
+      } catch (err) {
+        /* keep the built-in starting values */
+      }
+    }
+
+    function nudge(key, delta, min, max, places) {
+      var factor = Math.pow(10, places == null ? 1 : places);
+      var next = Math.round((state[key] + delta) * factor) / factor;
+      if (next < min) next = min;
+      if (next > max) next = max;
+      state[key] = next;
+      render();
+    }
+
+    function onMeasure(el, assign) {
+      el.addEventListener("input", function () {
+        var raw = el.value.trim();
+        if (raw === "" || /[.,]$/.test(raw)) return;
+        var value = Workshop.parseNumber(raw);
+        if (value === null) {
+          showError("invalid");
+          return;
+        }
+        assign(value);
+        render();
+      });
+    }
+
+    onMeasure(fields.width, function (value) { state.w = value; });
+    onMeasure(fields.thickness, function (value) { state.t = value; });
+    onMeasure(fields.tails, function (value) { state.n = Math.max(1, Math.round(value)); });
+    onMeasure(fields.pin, function (value) { state.pb = value; });
+    onMeasure(fields.angle, function (value) {
+      state.angle = value < 0 ? 0 : value;
+      if (state.type === "box" && state.angle > 0.01) state.type = "through";
+    });
+    onMeasure(fields.floor, function (value) { state.floor = value; });
+
+    document.getElementById("width-dec").addEventListener("click", function () { nudge("w", -1, 1, 999); });
+    document.getElementById("width-inc").addEventListener("click", function () { nudge("w", 1, 1, 999); });
+    document.getElementById("thickness-dec").addEventListener("click", function () { nudge("t", -1, 1, 999); });
+    document.getElementById("thickness-inc").addEventListener("click", function () { nudge("t", 1, 1, 999); });
+    document.getElementById("tails-dec").addEventListener("click", function () { nudge("n", -1, 1, 40); });
+    document.getElementById("tails-inc").addEventListener("click", function () { nudge("n", 1, 1, 40); });
+    document.getElementById("pin-dec").addEventListener("click", function () { nudge("pb", -1, 1, 999); });
+    document.getElementById("pin-inc").addEventListener("click", function () { nudge("pb", 1, 1, 999); });
+    document.getElementById("angle-dec").addEventListener("click", function () { nudge("angle", -0.1, 0, 60, 2); });
+    document.getElementById("angle-inc").addEventListener("click", function () { nudge("angle", 0.1, 0, 60, 2); });
+    document.getElementById("floor-dec").addEventListener("click", function () { nudge("floor", -0.1, 0, state.t); });
+    document.getElementById("floor-inc").addEventListener("click", function () { nudge("floor", 0.1, 0, state.t); });
+
+    var typeButtons = document.querySelectorAll("#type-choices button");
+    for (var b = 0; b < typeButtons.length; b += 1) {
+      typeButtons[b].addEventListener("click", function () {
+        var next = this.getAttribute("data-type");
+        if (next === "box") state.angle = 0;
+        else if (state.angle < 0.01) state.angle = 7.13;
+        state.type = next;
+        render();
+      });
+    }
+
+    var angleButtons = document.querySelectorAll("#angle-choices button");
+    for (var p = 0; p < angleButtons.length; p += 1) {
+      angleButtons[p].addEventListener("click", function () {
+        var preset = this.getAttribute("data-angle");
+        if (preset === "custom") {
+          if (state.type === "box") state.type = "through";
+          render();
+          fields.angle.disabled = false;
+          fields.angle.focus();
+          return;
+        }
+        state.angle = Number(preset);
+        if (state.type === "box" && state.angle > 0.01) state.type = "through";
+        if (preset === "0") state.type = state.type === "half" ? "half" : "box";
+        fields.angle.value = formatMm(state.angle, 2);
+        render();
+      });
+    }
+
+    function applyPage() {
+      document.title = t("title");
+      document.getElementById("title").textContent = t("title");
+      document.getElementById("intro").textContent = t("intro");
+      document.getElementById("joint-panel").setAttribute("aria-label", t("typeHeading"));
+      document.getElementById("type-heading").textContent = t("typeHeading");
+      document.getElementById("width-label").textContent = t("width");
+      document.getElementById("width-dec").setAttribute("aria-label", t("narrower"));
+      document.getElementById("width-inc").setAttribute("aria-label", t("wider"));
+      document.getElementById("thickness-label").textContent = t("thickness");
+      document.getElementById("thickness-dec").setAttribute("aria-label", t("thinner"));
+      document.getElementById("thickness-inc").setAttribute("aria-label", t("thicker"));
+      document.getElementById("tails-label").textContent = t("tails");
+      document.getElementById("tails-dec").setAttribute("aria-label", t("fewer"));
+      document.getElementById("tails-inc").setAttribute("aria-label", t("more"));
+      document.getElementById("pin-label").textContent = t("pin");
+      document.getElementById("pin-hint").textContent = t("pinHint");
+      document.getElementById("pin-dec").setAttribute("aria-label", t("narrower"));
+      document.getElementById("pin-inc").setAttribute("aria-label", t("wider"));
+      document.getElementById("angle-heading").textContent = t("angleHeading");
+      document.getElementById("angle-label").textContent = t("angle");
+      document.getElementById("angle-note").textContent = t("angleNote");
+      document.getElementById("angle-dec").setAttribute("aria-label", t("less"));
+      document.getElementById("angle-inc").setAttribute("aria-label", t("greater"));
+      document.getElementById("floor-heading").textContent = t("floorHeading");
+      document.getElementById("floor-label").textContent = t("floor");
+      document.getElementById("floor-hint").textContent = t("floorHint");
+      document.getElementById("floor-dec").setAttribute("aria-label", t("thinner"));
+      document.getElementById("floor-inc").setAttribute("aria-label", t("thicker"));
+      document.getElementById("results-heading").textContent = t("results");
+      document.getElementById("pin-wide-label").textContent = t("pinWide");
+      document.getElementById("tail-wide-label").textContent = t("tailWide");
+      document.getElementById("depth-label").textContent = t("depth");
+      document.getElementById("depth-hint").textContent = t("depthHint");
+      document.getElementById("face-cap").textContent = t("face");
+      document.getElementById("corner-cap").textContent = t("corner");
+      document.getElementById("figures-panel").setAttribute("aria-label", t("results"));
+      render();
+    }
+
+    loadState();
+    Workshop.init({ page: "dovetail", onChange: applyPage });
+  </script>
+</body>
+</html>
