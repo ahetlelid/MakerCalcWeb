@@ -121,11 +121,11 @@
     <section class="panel results" id="results-panel" aria-live="polite">
       <h2 id="results-heading">Mål</h2>
       <div class="result">
-        <span class="result-label" id="pin-wide-label">Vid pinne</span>
+        <span class="result-label" id="pin-wide-label">Pinne, bred side</span>
         <p class="value" id="pin-wide">—</p>
       </div>
       <div class="result">
-        <span class="result-label" id="tail-wide-label">Vid hale</span>
+        <span class="result-label" id="tail-wide-label">Hale, bred side</span>
         <p class="value" id="tail-wide">—</p>
       </div>
       <div class="result">
@@ -136,13 +136,13 @@
       <p class="limit" id="limit" hidden></p>
     </section>
 
-    <section class="figures" id="figures-panel">
+    <section class="figures joint-figures" id="figures-panel">
       <figure>
-        <svg id="face-svg" viewBox="0 0 320 340" role="img" aria-labelledby="face-cap"></svg>
-        <figcaption id="face-cap">Synsflate</figcaption>
+        <svg id="face-svg" viewBox="0 0 320 470" role="img" aria-labelledby="face-cap"></svg>
+        <figcaption id="face-cap">Endeflate</figcaption>
       </figure>
       <figure>
-        <svg id="corner-svg" viewBox="0 0 320 200" role="img" aria-labelledby="corner-cap"></svg>
+        <svg id="corner-svg" viewBox="0 0 320 240" role="img" aria-labelledby="corner-cap"></svg>
         <figcaption id="corner-cap">Hjørne</figcaption>
       </figure>
     </section>
@@ -178,13 +178,16 @@
         floor: "Bunn",
         floorHint: "Tykkelsen som står igjen på forsiden.",
         results: "Mål",
-        pinWide: "Vid pinne",
-        tailWide: "Vid hale",
+        pinWide: "Pinne, bred side",
+        tailWide: "Hale, bred side",
         depth: "Dybde",
         depthHint: "Så langt pinnene går inn.",
-        face: "Synsflate",
+        face: "Endeflate",
         pinsFace: "Pinnebord",
         tailsFace: "Halebord",
+        detail: "Utsnitt",
+        lip: "Kant",
+        show: "Forside",
         corner: "Hjørne",
         invalid: "Sjekk målene. Bredde, tykkelse og pinnebredde må være større enn null.",
         pinsFit: "Pinnene er bredere enn bordet.",
@@ -192,7 +195,7 @@
       },
       sv: {
         title: "Laxstjärt",
-        intro: "Inställning för laxstjärt och fingerskarv. Bredd, tjocklek och antal bestämmer tapparna.",
+        intro: "Inställning för laxstjärt och fingerskarv. Bredd, tjocklek och antal laxstjärtar bestämmer tapparna.",
         typeHeading: "Fog",
         box: "Fingerskarv",
         through: "Genomgående",
@@ -218,13 +221,16 @@
         floor: "Botten",
         floorHint: "Tjockleken som blir kvar på framsidan.",
         results: "Mått",
-        pinWide: "Bred tapp",
-        tailWide: "Bred laxstjärt",
+        pinWide: "Tapp, bred sida",
+        tailWide: "Laxstjärt, bred sida",
         depth: "Djup",
         depthHint: "Så långt tapparna går in.",
-        face: "Synlig sida",
+        face: "Ändyta",
         pinsFace: "Tappbräda",
         tailsFace: "Laxstjärtsbräda",
+        detail: "Utsnitt",
+        lip: "Kant",
+        show: "Framsida",
         corner: "Hörn",
         invalid: "Kontrollera måtten. Bredd, tjocklek och tappbredd måste vara större än noll.",
         pinsFit: "Tapparna är bredare än brädan.",
@@ -258,13 +264,16 @@
         floor: "Bund",
         floorHint: "Tykkelsen der bliver tilbage på forsiden.",
         results: "Mål",
-        pinWide: "Bred tap",
-        tailWide: "Bred hale",
+        pinWide: "Tap, bred side",
+        tailWide: "Hale, bred side",
         depth: "Dybde",
         depthHint: "Så langt tappene går ind.",
-        face: "Synsflade",
+        face: "Endeflade",
         pinsFace: "Tapbræt",
         tailsFace: "Halebræt",
+        detail: "Udsnit",
+        lip: "Kant",
+        show: "Forside",
         corner: "Hjørne",
         invalid: "Tjek målene. Bredde, tykkelse og tapbredde skal være større end nul.",
         pinsFit: "Tappene er bredere end brættet.",
@@ -272,7 +281,7 @@
       },
       fi: {
         title: "Lohenpyrstö",
-        intro: "Asetus lohenpyrstölle ja sormiliitokselle. Leveys, paksuus ja määrä määräävät tapit.",
+        intro: "Mitoitus lohenpyrstölle ja sormiliitokselle. Leveys, paksuus ja lohenpyrstöjen määrä määräävät tapit.",
         typeHeading: "Liitos",
         box: "Sormiliitos",
         through: "Läpimenevä",
@@ -294,21 +303,24 @@
         custom: "Oma",
         less: "Pienempi",
         greater: "Suurempi",
-        floorHeading: "Pääty",
-        floor: "Pääty",
+        floorHeading: "Pohja",
+        floor: "Pohja",
         floorHint: "Etupinnalle jäävä paksuus.",
         results: "Mitat",
-        pinWide: "Leveä tappi",
-        tailWide: "Leveä lohenpyrstö",
+        pinWide: "Tapin leveä sivu",
+        tailWide: "Lohenpyrstön leveä sivu",
         depth: "Syvyys",
-        depthHint: "Näin pitkälle tapit ulottuvat.",
-        face: "Näkyvä sivu",
+        depthHint: "Näin syvälle tapit ulottuvat.",
+        face: "Päätypinta",
         pinsFace: "Tappilauta",
         tailsFace: "Lohenpyrstölauta",
-        corner: "Kulma",
+        detail: "Suurennos",
+        lip: "Reuna",
+        show: "Etupuoli",
+        corner: "Nurkka",
         invalid: "Tarkista mitat. Leveyden, paksuuden ja tapin leveyden on oltava suurempia kuin nolla.",
         pinsFit: "Tapit ovat lautaa leveämpiä.",
-        noDepth: "Päädyn on oltava laudan paksuutta pienempi."
+        noDepth: "Pohjan on oltava laudan paksuutta pienempi."
       },
       en: {
         title: "Dovetail",
@@ -338,13 +350,16 @@
         floor: "Floor",
         floorHint: "Thickness left on the show face.",
         results: "Sizes",
-        pinWide: "Wide pin",
-        tailWide: "Wide tail",
+        pinWide: "Pin, wide side",
+        tailWide: "Tail, wide side",
         depth: "Depth",
         depthHint: "How far the pins reach.",
-        face: "Face",
-        pinsFace: "Pins board",
-        tailsFace: "Tails board",
+        face: "End face",
+        pinsFace: "Pin board",
+        tailsFace: "Tail board",
+        detail: "Detail",
+        lip: "Lip",
+        show: "Show face",
         corner: "Corner",
         invalid: "Check the sizes. Width, thickness and pin width must be greater than zero.",
         pinsFit: "The pins are wider than the board.",
@@ -464,59 +479,139 @@
         X(solid.topLeft).toFixed(1) + "," + Y(depth).toFixed(1);
     }
 
+    function hDim(x1, x2, y, label, textY) {
+      var mid = (x1 + x2) / 2;
+      return '<line class="joint-dim" x1="' + x1.toFixed(1) + '" y1="' + y.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y.toFixed(1) + '"/>' +
+        '<line class="joint-dim" x1="' + x1.toFixed(1) + '" y1="' + (y - 4).toFixed(1) + '" x2="' + x1.toFixed(1) + '" y2="' + (y + 4).toFixed(1) + '"/>' +
+        '<line class="joint-dim" x1="' + x2.toFixed(1) + '" y1="' + (y - 4).toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + (y + 4).toFixed(1) + '"/>' +
+        '<text class="dim-label" x="' + mid.toFixed(1) + '" y="' + textY.toFixed(1) + '" text-anchor="middle">' + label + "</text>";
+    }
+
     function renderFace(layout) {
       var svg = document.getElementById("face-svg");
       var depth = Math.max(layout.pinDepth, 0.1);
-      function panel(solids, klass, label, top) {
-        var left = 28;
-        var right = 292;
-        var boxTop = top + 22;
-        var boxH = 124;
-        var scale = Math.min((right - left) / state.w, boxH / depth);
+      var floor = state.type === "half" ? Math.max(0, state.t - layout.pinDepth) : 0;
+
+      function panel(solids, klass, label, top, withLip) {
+        var lip = withLip ? floor : 0;
+        var total = depth + lip;
+        var left = 16;
+        var right = 304;
+        var boxTop = top + 18;
+        var boxH = 64;
+        var scale = Math.min((right - left) / state.w, boxH / Math.max(total, 0.1));
         var drawnW = state.w * scale;
-        var drawnH = depth * scale;
+        var drawnH = total * scale;
         var ox = left + ((right - left) - drawnW) / 2;
         var oy = boxTop + (boxH - drawnH) / 2;
         function X(mm) { return ox + mm * scale; }
         function Y(mm) { return oy + mm * scale; }
-        var html = '<text class="small-label" x="160" y="' + (top + 16) + '" text-anchor="middle">' + label + "</text>";
+        var html = '<text class="small-label" x="160" y="' + (top + 14) + '" text-anchor="middle">' + label + "</text>";
         html += '<rect class="joint-board" x="' + X(0).toFixed(1) + '" y="' + Y(0).toFixed(1) +
           '" width="' + drawnW.toFixed(1) + '" height="' + Math.max(drawnH, 1).toFixed(1) + '"/>';
         for (var i = 0; i < solids.length; i += 1) {
           html += '<polygon class="' + klass + '" points="' + trapPoints(solids[i], X, Y, depth) + '"/>';
         }
+        if (lip > 0.05) {
+          html += '<rect class="joint-lip" x="' + X(0).toFixed(1) + '" y="' + Y(depth).toFixed(1) +
+            '" width="' + drawnW.toFixed(1) + '" height="' + Math.max(lip * scale, 1).toFixed(1) + '"/>';
+        }
         return html;
       }
+
+      function detail() {
+        var tail = layout.tails[0];
+        var fullPin = layout.pins.length > 2 ? layout.pins[1] : null;
+        var span = tail.baseRight + (fullPin ? state.pb : state.pb / 2);
+        if (span > state.w) span = state.w;
+        var left = 46;
+        var right = 292;
+        var top = 214;
+        var boxH = 210;
+        var total = depth + floor;
+        var scale = Math.min((right - left) / span, (boxH - 28) / Math.max(total, 0.1));
+        var drawnW = span * scale;
+        var drawnH = total * scale;
+        var ox = left + ((right - left) - drawnW) / 2;
+        var oy = top + 22 + ((boxH - 28) - drawnH) / 2;
+        function X(mm) { return ox + mm * scale; }
+        function Y(mm) { return oy + mm * scale; }
+        var html = '<text class="small-label" x="160" y="206" text-anchor="middle">' + t("detail") + "</text>";
+        html += '<rect class="joint-board" x="' + X(0).toFixed(1) + '" y="' + Y(0).toFixed(1) +
+          '" width="' + drawnW.toFixed(1) + '" height="' + Math.max(drawnH, 1).toFixed(1) + '"/>';
+        html += '<clipPath id="detail-clip"><rect x="' + X(0).toFixed(1) + '" y="' + (Y(0) - 1).toFixed(1) +
+          '" width="' + drawnW.toFixed(1) + '" height="' + (drawnH + 2).toFixed(1) + '"/></clipPath>';
+        html += '<g clip-path="url(#detail-clip)">';
+        var shapes = layout.pins.concat(layout.tails);
+        for (var i = 0; i < shapes.length; i += 1) {
+          var solid = shapes[i];
+          if (solid.baseLeft >= span - 0.01) continue;
+          var baseW = solid.baseRight - solid.baseLeft;
+          var topW = solid.topRight - solid.topLeft;
+          var klass = "joint-pin";
+          if (baseW > topW + 0.05) klass = "joint-tail";
+          else if (Math.abs(baseW - topW) <= 0.05 && layout.tails.indexOf(solid) >= 0) klass = "joint-tail";
+          html += '<polygon class="' + klass + '" points="' + trapPoints(solid, X, Y, depth) + '"/>';
+        }
+        html += "</g>";
+        if (floor > 0.05) {
+          html += '<rect class="joint-lip" x="' + X(0).toFixed(1) + '" y="' + Y(depth).toFixed(1) +
+            '" width="' + drawnW.toFixed(1) + '" height="' + Math.max(floor * scale, 1).toFixed(1) + '"/>';
+          html += '<text class="joint-on-lip" x="' + X(span / 2).toFixed(1) + '" y="' + (Y(depth + floor / 2) + 4).toFixed(1) +
+            '" text-anchor="middle">' + t("lip") + " " + formatMm(floor, 1) + "</text>";
+        }
+        html += hDim(X(tail.baseLeft), X(tail.baseRight), Y(0) - 11, formatMm(layout.tailWide, 1), Y(0) - 16);
+        if (fullPin) {
+          html += hDim(X(fullPin.baseLeft), X(fullPin.baseRight), Y(0) - 11, formatMm(state.pb, 1), Y(0) - 16);
+        }
+        html += '<text class="dim-label" x="6" y="' + (Y(depth / 2) + 4).toFixed(1) + '" text-anchor="start">' +
+          formatMm(layout.pinDepth, 1) + "</text>";
+        return html;
+      }
+
       svg.innerHTML =
-        panel(layout.pins, "joint-pin", t("pinsFace"), 8) +
-        panel(layout.tails, "joint-tail", t("tailsFace"), 168);
+        panel(layout.pins, "joint-pin", t("pinsFace"), 2, false) +
+        panel(layout.tails, "joint-tail", t("tailsFace"), 92, true) +
+        detail();
     }
 
     function renderCorner(layout) {
       var svg = document.getElementById("corner-svg");
       var thick = Math.max(state.t, 0.1);
-      var arm = thick * 2.5;
-      var worldW = arm + thick;
+      var floor = state.type === "half" ? Math.max(0, state.t - layout.pinDepth) : 0;
+      var arm = Math.max(thick * 2.2, 40);
+      var reach = Math.max(thick * 2.2, 48);
+      var worldW = thick + reach;
       var worldH = arm + thick;
-      var left = 24;
-      var right = 296;
-      var top = 12;
-      var bottom = 188;
+      var left = 88;
+      var right = 304;
+      var top = 46;
+      var bottom = 214;
       var scale = Math.min((right - left) / worldW, (bottom - top) / worldH);
-      var ox = left + ((right - left) - worldW * scale) / 2;
+      var ox = left;
       var oy = top + ((bottom - top) - worldH * scale) / 2;
       function X(mm) { return ox + mm * scale; }
       function Y(mm) { return oy + mm * scale; }
-      var mark = Y(arm - layout.pinDepth);
-      svg.innerHTML =
-        '<rect class="joint-board" x="' + X(0).toFixed(1) + '" y="' + Y(arm).toFixed(1) +
-          '" width="' + (worldW * scale).toFixed(1) + '" height="' + (thick * scale).toFixed(1) + '"/>' +
+      var html =
         '<rect class="joint-tail" x="' + X(0).toFixed(1) + '" y="' + Y(0).toFixed(1) +
-          '" width="' + (thick * scale).toFixed(1) + '" height="' + ((arm + thick) * scale).toFixed(1) + '"/>' +
-        '<line class="joint-seam" x1="' + X(0).toFixed(1) + '" y1="' + Y(arm).toFixed(1) +
-          '" x2="' + X(thick).toFixed(1) + '" y2="' + Y(arm).toFixed(1) + '"/>' +
-        '<line class="joint-floor" x1="' + X(0).toFixed(1) + '" y1="' + mark.toFixed(1) +
-          '" x2="' + X(thick).toFixed(1) + '" y2="' + mark.toFixed(1) + '"/>';
+          '" width="' + (thick * scale).toFixed(1) + '" height="' + (worldH * scale).toFixed(1) + '"/>' +
+        '<rect class="joint-board" x="' + X(floor).toFixed(1) + '" y="' + Y(arm).toFixed(1) +
+          '" width="' + (reach * scale).toFixed(1) + '" height="' + (thick * scale).toFixed(1) + '"/>';
+      if (floor > 0.05) {
+        html += '<rect class="joint-lip" x="' + X(0).toFixed(1) + '" y="' + Y(0).toFixed(1) +
+          '" width="' + Math.max(floor * scale, 1.5).toFixed(1) + '" height="' + (worldH * scale).toFixed(1) + '"/>';
+        html += '<text class="small-label" x="' + (X(0) - 8).toFixed(1) + '" y="' + (Y(worldH / 2) - 2).toFixed(1) +
+          '" text-anchor="end">' + t("show") + "</text>";
+        html += '<text class="dim-label" x="' + (X(0) - 8).toFixed(1) + '" y="' + (Y(worldH / 2) + 16).toFixed(1) +
+          '" text-anchor="end">' + t("lip") + " " + formatMm(floor, 1) + "</text>";
+      } else {
+        html += '<text class="small-label" x="' + (X(0) - 8).toFixed(1) + '" y="' + (Y(arm + thick / 2) + 4).toFixed(1) +
+          '" text-anchor="end">' + t("show") + "</text>";
+      }
+      html += '<line class="joint-seam" x1="' + X(floor).toFixed(1) + '" y1="' + Y(arm).toFixed(1) +
+        '" x2="' + X(thick).toFixed(1) + '" y2="' + Y(arm).toFixed(1) + '"/>';
+      html += hDim(X(floor), X(thick), Y(0) - 12, formatMm(layout.pinDepth, 1), Y(0) - 16);
+      svg.innerHTML = html;
     }
 
     function render() {

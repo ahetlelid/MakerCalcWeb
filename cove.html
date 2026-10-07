@@ -24,7 +24,7 @@
     </nav>
     <header>
       <h1 id="title">Hulkil</h1>
-      <p id="intro">Oppsett for buet spor på sag. Bredde og dybde bestemmer buen.</p>
+      <p id="intro">Oppsett for buet spor på sagen. Bredde og dybde bestemmer buen.</p>
     </header>
 
     <section class="panel" id="profile-panel">
@@ -109,7 +109,7 @@
     <section class="panel results" id="results-panel" aria-live="polite">
       <h2 id="setup-heading">Sagoppsett</h2>
       <div class="result">
-        <span class="result-label" id="height-label">Bladløft</span>
+        <span class="result-label" id="height-label">Bladhøyde</span>
         <p class="value" id="height">—</p>
       </div>
       <div class="result">
@@ -150,7 +150,7 @@
     var TEXT = {
       no: {
         title: "Hulkil",
-        intro: "Oppsett for buet spor på sag. Bredde og dybde bestemmer buen.",
+        intro: "Oppsett for buet spor på sagen. Bredde og dybde bestemmer buen.",
         profile: "Spor",
         width: "Bredde",
         depth: "Dybde",
@@ -165,7 +165,7 @@
         kerf: "Kuttbredde",
         kerfNote: "Langs bladet blir sporet like bredt som kuttbredden. På tvers blir det like bredt som bladbuen.",
         setup: "Sagoppsett",
-        height: "Bladløft",
+        height: "Bladhøyde",
         angle: "Gjerdevinkel",
         angleHint: "0° er parallelt med bladet. 90° er på tvers.",
         tilt: "Bladhelling",
@@ -173,7 +173,7 @@
         toCenter: "Til bladsenter",
         toSide: "Til bladside",
         fromLeft: "fra venstre kant av sporet",
-        near: "Dybde ved nære kant",
+        near: "Dybde ved nærmeste kant",
         invalid: "Sjekk målene. Bredde og dybde må være større enn null.",
         tooNarrow: "Sporet er smalere enn kuttbredden.",
         tooWide: "Sporet er bredere enn bladet kan skjære på denne dybden.",
@@ -207,7 +207,7 @@
         angleHint: "0° är parallellt med klingan. 90° är tvärs.",
         tilt: "Klinglutning",
         tiltHint: "0° är lodrät klinga. Lutningen flyttar bottenpunkten åt sidan.",
-        toCenter: "Till klingcentrum",
+        toCenter: "Till klingans centrum",
         toSide: "Till klingans sida",
         fromLeft: "från vänster kant av spåret",
         near: "Djup vid närmaste kant",
@@ -232,19 +232,19 @@
         offsetHint: "0 er midt i sporet. Ud fra midten hældes klingen.",
         narrower: "Smallere",
         wider: "Bredere",
-        shallower: "Lavere",
+        shallower: "Grundere",
         deeper: "Dybere",
         bladeHeading: "Savklinge",
         blade: "Klingediameter",
         kerf: "Snitbredde",
         kerfNote: "Langs klingen bliver sporet lige så bredt som snitbredden. På tværs bliver det lige så bredt som klingens bue.",
         setup: "Savindstilling",
-        height: "Klingeopstilling",
+        height: "Klingehøjde",
         angle: "Anlægsvinkel",
         angleHint: "0° er parallelt med klingen. 90° er på tværs.",
         tilt: "Klingehældning",
         tiltHint: "0° er lodret klinge. Hældningen flytter bundpunktet til siden.",
-        toCenter: "Til klingecentrum",
+        toCenter: "Til klingens centrum",
         toSide: "Til klingens side",
         fromLeft: "fra venstre kant af sporet",
         near: "Dybde ved den nære kant",
@@ -284,11 +284,11 @@
         toCenter: "Terän keskelle",
         toSide: "Terän sivuun",
         fromLeft: "uran vasemmasta reunasta",
-        near: "Syvyys lähempänä reunassa",
+        near: "Syvyys läheisemmällä reunalla",
         invalid: "Tarkista mitat. Leveyden ja syvyyden on oltava suurempia kuin nolla.",
         tooNarrow: "Ura on kapeampi kuin sahausleveys.",
         tooWide: "Ura on leveämpi kuin terä pystyy sahaamaan tällä syvyydellä.",
-        offsetTooFar: "Siirto on suurempi kuin terä pystyy tällä syvyydellä.",
+        offsetTooFar: "Siirto on suurempi kuin terä pystyy antamaan tällä syvyydellä.",
         tooDeep: "Syvyys on suurempi kuin terän halkaisija.",
         kerfRange: "Sahausleveyden on oltava 0,2–6 mm.",
         section: "Poikkileikkaus",
@@ -302,8 +302,8 @@
         profile: "Groove",
         width: "Width",
         depth: "Depth",
-        offset: "Shift of the bottom",
-        offsetHint: "0 is the middle of the groove. Off center, the blade is tilted.",
+        offset: "Offset of the bottom",
+        offsetHint: "0 is the middle of the groove. Away from the center, the blade is tilted.",
         narrower: "Narrower",
         wider: "Wider",
         shallower: "Shallower",
@@ -319,7 +319,7 @@
         tilt: "Blade tilt",
         tiltHint: "0° is a vertical blade. Tilt moves the bottom to the side.",
         toCenter: "To blade center",
-        toSide: "To blade face",
+        toSide: "To blade side",
         fromLeft: "from the left edge of the groove",
         near: "Depth at the nearer edge",
         invalid: "Check the sizes. Width and depth must be greater than zero.",
@@ -327,7 +327,7 @@
         tooWide: "The groove is wider than the blade can cut at this depth.",
         offsetTooFar: "The shift is greater than the blade can make at this depth.",
         tooDeep: "The depth is greater than the blade diameter.",
-        kerfRange: "Kerf must be between 0.2 and 6 mm.",
+        kerfRange: "The kerf must be between 0.2 and 6 mm.",
         section: "Section",
         plan: "From above",
         apex: "bottom",
