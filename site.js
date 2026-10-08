@@ -13,6 +13,14 @@
       coveBlurb: "Sporprofil og oppsett for et buet spor på sagen.",
       dovetail: "Svalehale",
       dovetailBlurb: "Pinner og haler for svalehale og fingerskjøt.",
+      segment: "Segment",
+      segmentBlurb: "Lengder og kappvinkel for ramme, boks og segmentring.",
+      spacing: "Fordeling",
+      spacingBlurb: "Jevne mellomrom for hyller, dybler og hyllepinner.",
+      arc: "Bue",
+      arcBlurb: "Radius, buelengde og trammel fra korde og pil.",
+      brace: "Avstiver",
+      braceBlurb: "Lengde og kappvinkel for skråstag i en lysåpning.",
       language: "Språk"
     },
     sv: {
@@ -26,6 +34,14 @@
       coveBlurb: "Spårprofil och inställning för ett böjt spår på sågen.",
       dovetail: "Laxstjärt",
       dovetailBlurb: "Tappar och laxstjärtar för sinkning och fingerskarv.",
+      segment: "Segment",
+      segmentBlurb: "Längder och kappvinkel för ram, låda och segmentring.",
+      spacing: "Fördelning",
+      spacingBlurb: "Jämna mellanrum för hyllor, pluggar och hyllstift.",
+      arc: "Båge",
+      arcBlurb: "Radie, båglängd och trammel från korda och pilhöjd.",
+      brace: "Sträva",
+      braceBlurb: "Längd och kappvinkel för snedstag i en öppning.",
       language: "Språk"
     },
     da: {
@@ -39,6 +55,14 @@
       coveBlurb: "Sporprofil og indstilling til et buet spor på saven.",
       dovetail: "Svalehale",
       dovetailBlurb: "Tappe og haler til svalehale og fingersamling.",
+      segment: "Segment",
+      segmentBlurb: "Længder og kappevinkel til ramme, kasse og segmentring.",
+      spacing: "Fordeling",
+      spacingBlurb: "Jævne mellemrum til hylder, dyvler og hyldestifter.",
+      arc: "Bue",
+      arcBlurb: "Radius, buelængde og trammel fra korde og pilehøjde.",
+      brace: "Afstiver",
+      braceBlurb: "Længde og kappevinkel til skråstag i en lysning.",
       language: "Sprog"
     },
     fi: {
@@ -52,6 +76,14 @@
       coveBlurb: "Uran profiili ja asetukset kaarevaan sahaukseen.",
       dovetail: "Lohenpyrstö",
       dovetailBlurb: "Tapit ja lohenpyrstöt sinkkaukseen ja sormiliitokseen.",
+      segment: "Segmentti",
+      segmentBlurb: "Pituudet ja katkaisukulma kehykselle, laatikolle ja segmenttirenkaalle.",
+      spacing: "Jako",
+      spacingBlurb: "Tasaiset välit hyllyille, tulpille ja hyllytapille.",
+      arc: "Kaari",
+      arcBlurb: "Säde, kaaren pituus ja trammeli jänteestä ja nuolesta.",
+      brace: "Tuki",
+      braceBlurb: "Pituus ja katkaisukulma vinotuelle aukon sisällä.",
       language: "Kieli"
     },
     en: {
@@ -65,6 +97,14 @@
       coveBlurb: "Profile and setup for a curved groove on the saw.",
       dovetail: "Dovetail",
       dovetailBlurb: "Pins and tails for dovetails and box joints.",
+      segment: "Segment",
+      segmentBlurb: "Lengths and cut angle for frames, boxes and segmented rings.",
+      spacing: "Spacing",
+      spacingBlurb: "Even gaps for shelves, dowels and shelf pins.",
+      arc: "Arc",
+      arcBlurb: "Radius, arc length and trammel from chord and rise.",
+      brace: "Brace",
+      braceBlurb: "Length and cut angles for a diagonal brace in an opening.",
       language: "Language"
     }
   };
@@ -72,6 +112,7 @@
   var lang = "no";
   var page = "home";
   var onChange = null;
+  var LINK_KEYS = ["miter", "cove", "dovetail", "segment", "spacing", "arc", "brace"];
 
   function detectLang(list) {
     var languages = list || (navigator.languages && navigator.languages.length
@@ -121,18 +162,13 @@
     if (siteTitle) siteTitle.textContent = text("siteTitle");
     var siteIntro = document.getElementById("site-intro");
     if (siteIntro) siteIntro.textContent = text("intro");
-    var miterName = document.getElementById("link-miter-name");
-    if (miterName) miterName.textContent = text("miter");
-    var miterBlurb = document.getElementById("link-miter-blurb");
-    if (miterBlurb) miterBlurb.textContent = text("miterBlurb");
-    var coveName = document.getElementById("link-cove-name");
-    if (coveName) coveName.textContent = text("cove");
-    var coveBlurb = document.getElementById("link-cove-blurb");
-    if (coveBlurb) coveBlurb.textContent = text("coveBlurb");
-    var dovetailName = document.getElementById("link-dovetail-name");
-    if (dovetailName) dovetailName.textContent = text("dovetail");
-    var dovetailBlurb = document.getElementById("link-dovetail-blurb");
-    if (dovetailBlurb) dovetailBlurb.textContent = text("dovetailBlurb");
+    for (var k = 0; k < LINK_KEYS.length; k += 1) {
+      var id = LINK_KEYS[k];
+      var nameEl = document.getElementById("link-" + id + "-name");
+      if (nameEl) nameEl.textContent = text(id);
+      var blurbEl = document.getElementById("link-" + id + "-blurb");
+      if (blurbEl) blurbEl.textContent = text(id + "Blurb");
+    }
     if (page === "home") document.title = text("siteTitle");
   }
 

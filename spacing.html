@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Fordeling</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <nav class="sitenav" id="sitenav">
+      <a href="index.html" data-nav="home">Verktøy</a>
+      <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
+      <a href="cove.html" data-nav="cove">Hulkil</a>
+      <a href="dovetail.html" data-nav="dovetail">Svalehale</a>
+      <a href="segment.html" data-nav="segment">Segment</a>
+      <a href="spacing.html" data-nav="spacing">Fordeling</a>
+      <a href="arc.html" data-nav="arc">Bue</a>
+      <a href="brace.html" data-nav="brace">Avstiver</a>
+      <select id="langs" aria-label="Språk">
+        <option value="no" lang="no">Norsk</option>
+        <option value="sv" lang="sv">Svenska</option>
+        <option value="da" lang="da">Dansk</option>
+        <option value="fi" lang="fi">Suomi</option>
+        <option value="en" lang="en">English</option>
+      </select>
+    </nav>
+    <header>
+      <h1 id="title">Fordeling</h1>
+      <p id="intro">Jevne mellomrom for hyller, dybler og hyllepinner.</p>
+    </header>
+
+    <section class="panel" id="inputs-panel">
+      <h2 id="mode-heading">Modus</h2>
+      <div class="choices" id="mode-choices">
+        <button type="button" data-mode="equal" aria-pressed="true">Likt mellomrom</button>
+        <button type="button" data-mode="ends">Fast endeavstand</button>
+      </div>
+      <div class="field">
+        <label id="length-label" for="length">Total lengde</label>
+        <div class="stepper">
+          <button type="button" id="length-dec" aria-label="Kortere">−</button>
+          <div class="measure">
+            <input id="length" type="text" inputmode="decimal" value="800" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="length-inc" aria-label="Lengre">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="thick-label" for="thick">Emnetykkelse</label>
+        <div class="stepper">
+          <button type="button" id="thick-dec" aria-label="Tynnere">−</button>
+          <div class="measure">
+            <input id="thick" type="text" inputmode="decimal" value="18" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="thick-inc" aria-label="Tykkere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="count-label" for="count">Antall</label>
+        <div class="stepper">
+          <button type="button" id="count-dec" aria-label="Færre">−</button>
+          <div class="measure">
+            <input id="count" type="text" inputmode="numeric" value="3" autocomplete="off">
+          </div>
+          <button type="button" id="count-inc" aria-label="Flere">+</button>
+        </div>
+      </div>
+      <div class="field" id="edge-field">
+        <label id="edge-label" for="edge">Kantavstand</label>
+        <div class="stepper">
+          <button type="button" id="edge-dec" aria-label="Mindre">−</button>
+          <div class="measure">
+            <input id="edge" type="text" inputmode="decimal" value="50" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="edge-inc" aria-label="Større">+</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel results" id="results-panel" aria-live="polite">
+      <h2 id="results-heading">Fordeling</h2>
+      <div class="result">
+        <span class="result-label" id="gap-label">Mellomrom</span>
+        <p class="value" id="gap">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="pitch-label">Senteravstand</span>
+        <p class="value" id="pitch">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="pos-label">Posisjoner fra venstre</span>
+        <p class="value pos-list" id="positions">—</p>
+      </div>
+      <p class="limit" id="limit" hidden></p>
+    </section>
+
+    <details class="fold figures-fold" id="figures-fold" open>
+      <summary>
+        <span class="fold-label" id="figures-heading">Figurer</span>
+      </summary>
+      <div class="figures" id="figures-panel">
+        <figure>
+          <svg id="strip-svg" viewBox="0 0 320 120" role="img" aria-labelledby="strip-cap"></svg>
+          <figcaption id="strip-cap">Fordeling</figcaption>
+        </figure>
+      </div>
+    </details>
+  </main>
+  <script src="site.js"></script>
+  <script>
+    var TEXT = {
+      no: {
+        title: "Fordeling",
+        intro: "Jevne mellomrom for hyller, dybler og hyllepinner.",
+        modeHeading: "Modus",
+        equal: "Likt mellomrom",
+        ends: "Fast endeavstand",
+        length: "Total lengde",
+        thick: "Emnetykkelse",
+        count: "Antall",
+        edge: "Kantavstand",
+        shorter: "Kortere",
+        longer: "Lengre",
+        thinner: "Tynnere",
+        thicker: "Tykkere",
+        fewer: "Færre",
+        more: "Flere",
+        less: "Mindre",
+        greater: "Større",
+        results: "Fordeling",
+        gap: "Mellomrom",
+        pitch: "Senteravstand",
+        pos: "Posisjoner fra venstre",
+        strip: "Fordeling",
+        figures: "Figurer",
+        invalid: "Sjekk målene. Lengde, tykkelse og antall må være gyldige.",
+        noFit: "Emnene får ikke plass med disse målene."
+      },
+      sv: {
+        title: "Fördelning",
+        intro: "Jämna mellanrum för hyllor, pluggar och hyllstift.",
+        modeHeading: "Läge",
+        equal: "Lika mellanrum",
+        ends: "Fast ändavstånd",
+        length: "Total längd",
+        thick: "Ämnestjocklek",
+        count: "Antal",
+        edge: "Kantavstånd",
+        shorter: "Kortare",
+        longer: "Längre",
+        thinner: "Tunnare",
+        thicker: "Tjockare",
+        fewer: "Färre",
+        more: "Fler",
+        less: "Mindre",
+        greater: "Större",
+        results: "Fördelning",
+        gap: "Mellanrum",
+        pitch: "Centrumavstånd",
+        pos: "Positioner från vänster",
+        strip: "Fördelning",
+        figures: "Figurer",
+        invalid: "Kontrollera måtten. Längd, tjocklek och antal måste vara giltiga.",
+        noFit: "Ämnena får inte plats med de här måtten."
+      },
+      da: {
+        title: "Fordeling",
+        intro: "Jævne mellemrum til hylder, dyvler og hyldestifter.",
+        modeHeading: "Tilstand",
+        equal: "Lige mellemrum",
+        ends: "Fast endafstand",
+        length: "Total længde",
+        thick: "Emnetykkelse",
+        count: "Antal",
+        edge: "Kantafstand",
+        shorter: "Kortere",
+        longer: "Længere",
+        thinner: "Tyndere",
+        thicker: "Tykkere",
+        fewer: "Færre",
+        more: "Flere",
+        less: "Mindre",
+        greater: "Større",
+        results: "Fordeling",
+        gap: "Mellemrum",
+        pitch: "Centerafstand",
+        pos: "Positioner fra venstre",
+        strip: "Fordeling",
+        figures: "Figurer",
+        invalid: "Tjek målene. Længde, tykkelse og antal skal være gyldige.",
+        noFit: "Emnerne får ikke plads med de mål."
+      },
+      fi: {
+        title: "Jako",
+        intro: "Tasaiset välit hyllyille, tulpille ja hyllytapille.",
+        modeHeading: "Tila",
+        equal: "Tasaiset välit",
+        ends: "Kiinteä päätyväli",
+        length: "Kokonaispituus",
+        thick: "Aihion paksuus",
+        count: "Määrä",
+        edge: "Reunaväli",
+        shorter: "Lyhyempi",
+        longer: "Pidempi",
+        thinner: "Ohuempi",
+        thicker: "Paksumpi",
+        fewer: "Vähemmän",
+        more: "Enemmän",
+        less: "Pienempi",
+        greater: "Suurempi",
+        results: "Jako",
+        gap: "Väli",
+        pitch: "Keskiväli",
+        pos: "Paikat vasemmalta",
+        strip: "Jako",
+        figures: "Kuvat",
+        invalid: "Tarkista mitat. Pituuden, paksuuden ja määrän on oltava kelvollisia.",
+        noFit: "Aihiot eivät mahdu näillä mitoilla."
+      },
+      en: {
+        title: "Spacing",
+        intro: "Even gaps for shelves, dowels and shelf pins.",
+        modeHeading: "Mode",
+        equal: "Equal gaps",
+        ends: "Fixed end clearance",
+        length: "Total length",
+        thick: "Piece thickness",
+        count: "Count",
+        edge: "End clearance",
+        shorter: "Shorter",
+        longer: "Longer",
+        thinner: "Thinner",
+        thicker: "Thicker",
+        fewer: "Fewer",
+        more: "More",
+        less: "Less",
+        greater: "More",
+        results: "Spacing",
+        gap: "Gap",
+        pitch: "Center spacing",
+        pos: "Positions from the left",
+        strip: "Spacing",
+        figures: "Figures",
+        invalid: "Check the sizes. Length, thickness and count must be valid.",
+        noFit: "The pieces do not fit with these sizes."
+      }
+    };
+
+    var state = { mode: "equal", L: 800, t: 18, n: 3, e: 50 };
+
+    var fields = {
+      length: document.getElementById("length"),
+      thick: document.getElementById("thick"),
+      count: document.getElementById("count"),
+      edge: document.getElementById("edge")
+    };
+
+    function t(key) { return TEXT[Workshop.lang()][key]; }
+    function formatMm(value, digits) {
+      return Workshop.formatNumber(value, digits == null ? 1 : digits);
+    }
+    function writeField(el, value, digits) {
+      if (document.activeElement === el) return;
+      el.value = formatMm(value, digits);
+    }
+
+    function compute() {
+      var L = state.L;
+      var thick = state.t;
+      var n = Math.round(state.n);
+      var e = state.e;
+      if (!(L > 0) || !(thick > 0) || !(n >= 1)) return { error: "invalid" };
+      var gap;
+      var start;
+      if (state.mode === "equal") {
+        gap = (L - n * thick) / (n + 1);
+        start = gap;
+      } else {
+        if (!(e >= 0)) return { error: "invalid" };
+        if (n === 1) {
+          if (L < thick + 2 * e) return { error: "noFit" };
+          gap = 0;
+          start = e;
+        } else {
+          gap = (L - n * thick - 2 * e) / (n - 1);
+          start = e;
+        }
+      }
+      if (gap < -1e-9) return { error: "noFit" };
+      if (gap < 0) gap = 0;
+      var centers = [];
+      var lefts = [];
+      for (var i = 0; i < n; i += 1) {
+        var left = start + i * (thick + gap);
+        lefts.push(left);
+        centers.push(left + thick / 2);
+      }
+      return { gap: gap, pitch: thick + gap, centers: centers, lefts: lefts, n: n, t: thick, L: L, e: state.mode === "equal" ? gap : e, mode: state.mode };
+    }
+
+    function showError(code) {
+      document.getElementById("gap").textContent = "—";
+      document.getElementById("pitch").textContent = "—";
+      document.getElementById("positions").textContent = "—";
+      var limit = document.getElementById("limit");
+      limit.hidden = false;
+      limit.textContent = t(code);
+      document.getElementById("strip-svg").innerHTML = "";
+    }
+
+    function renderStrip(result) {
+      var svg = document.getElementById("strip-svg");
+      var left = 16;
+      var right = 304;
+      var scale = (right - left) / result.L;
+      var y = 44;
+      var h = 28;
+      var html = '<rect class="joint-board" x="' + left + '" y="' + (y - 8) + '" width="' + (right - left) + '" height="' + (h + 16) + '"/>';
+      for (var i = 0; i < result.lefts.length; i += 1) {
+        var x = left + result.lefts[i] * scale;
+        var w = Math.max(2, result.t * scale);
+        html += '<rect class="joint-pin" x="' + x.toFixed(1) + '" y="' + y + '" width="' + w.toFixed(1) + '" height="' + h + '"/>';
+      }
+      html += '<text class="dim-label" x="160" y="22" text-anchor="middle">' + formatMm(result.L, 1) + "</text>";
+      svg.innerHTML = html;
+    }
+
+    function render() {
+      writeField(fields.length, state.L, 1);
+      writeField(fields.thick, state.t, 1);
+      writeField(fields.count, state.n, 0);
+      writeField(fields.edge, state.e, 1);
+      document.getElementById("edge-field").hidden = state.mode !== "ends";
+      document.getElementById("length-dec").disabled = state.L <= 1;
+      document.getElementById("length-inc").disabled = state.L >= 9999;
+      document.getElementById("thick-dec").disabled = state.t <= 1;
+      document.getElementById("thick-inc").disabled = state.t >= 999;
+      document.getElementById("count-dec").disabled = state.n <= 1;
+      document.getElementById("count-inc").disabled = state.n >= 80;
+      document.getElementById("edge-dec").disabled = state.e <= 0;
+      document.getElementById("edge-inc").disabled = state.e >= 9999;
+      var modes = document.querySelectorAll("#mode-choices button");
+      for (var i = 0; i < modes.length; i += 1) {
+        var mode = modes[i].getAttribute("data-mode");
+        modes[i].setAttribute("aria-pressed", mode === state.mode ? "true" : "false");
+        modes[i].textContent = t(mode);
+      }
+      saveState();
+      var result = compute();
+      if (result.error) {
+        showError(result.error);
+        return;
+      }
+      document.getElementById("gap").textContent = formatMm(result.gap, 1) + " mm";
+      document.getElementById("pitch").textContent = formatMm(result.pitch, 1) + " mm";
+      document.getElementById("positions").textContent = result.centers.map(function (c) {
+        return formatMm(c, 1);
+      }).join(" · ") + " mm";
+      document.getElementById("limit").hidden = true;
+      renderStrip(result);
+      document.getElementById("strip-cap").textContent = t("strip");
+    }
+
+    function saveState() {
+      try { localStorage.setItem("makercalc-spacing", JSON.stringify(state)); } catch (err) { /* keep */ }
+    }
+    function loadState() {
+      try {
+        var raw = localStorage.getItem("makercalc-spacing");
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (data.mode === "equal" || data.mode === "ends") state.mode = data.mode;
+        if (data.L > 0) state.L = data.L;
+        if (data.t > 0) state.t = data.t;
+        if (data.n >= 1) state.n = data.n;
+        if (typeof data.e === "number" && data.e >= 0) state.e = data.e;
+      } catch (err) { /* defaults */ }
+    }
+
+    function nudge(key, delta, min, max, places) {
+      var factor = Math.pow(10, places == null ? 1 : places);
+      var next = Math.round((state[key] + delta) * factor) / factor;
+      if (next < min) next = min;
+      if (next > max) next = max;
+      state[key] = next;
+      render();
+    }
+
+    function onMeasure(el, assign) {
+      el.addEventListener("input", function () {
+        var raw = el.value.trim();
+        if (raw === "" || /[.,]$/.test(raw)) return;
+        var value = Workshop.parseNumber(raw);
+        if (value === null) return;
+        assign(value);
+        render();
+      });
+    }
+
+    onMeasure(fields.length, function (v) { state.L = v; });
+    onMeasure(fields.thick, function (v) { state.t = v; });
+    onMeasure(fields.count, function (v) { state.n = Math.max(1, Math.round(v)); });
+    onMeasure(fields.edge, function (v) { state.e = Math.max(0, v); });
+
+    document.getElementById("length-dec").addEventListener("click", function () { nudge("L", -1, 1, 9999); });
+    document.getElementById("length-inc").addEventListener("click", function () { nudge("L", 1, 1, 9999); });
+    document.getElementById("thick-dec").addEventListener("click", function () { nudge("t", -1, 1, 999); });
+    document.getElementById("thick-inc").addEventListener("click", function () { nudge("t", 1, 1, 999); });
+    document.getElementById("count-dec").addEventListener("click", function () { nudge("n", -1, 1, 80, 0); });
+    document.getElementById("count-inc").addEventListener("click", function () { nudge("n", 1, 1, 80, 0); });
+    document.getElementById("edge-dec").addEventListener("click", function () { nudge("e", -1, 0, 9999); });
+    document.getElementById("edge-inc").addEventListener("click", function () { nudge("e", 1, 0, 9999); });
+
+    var modeButtons = document.querySelectorAll("#mode-choices button");
+    for (var b = 0; b < modeButtons.length; b += 1) {
+      modeButtons[b].addEventListener("click", function () {
+        state.mode = this.getAttribute("data-mode");
+        render();
+      });
+    }
+
+    function applyPage() {
+      document.title = t("title");
+      document.getElementById("title").textContent = t("title");
+      document.getElementById("intro").textContent = t("intro");
+      document.getElementById("mode-heading").textContent = t("modeHeading");
+      document.getElementById("length-label").textContent = t("length");
+      document.getElementById("thick-label").textContent = t("thick");
+      document.getElementById("count-label").textContent = t("count");
+      document.getElementById("edge-label").textContent = t("edge");
+      document.getElementById("length-dec").setAttribute("aria-label", t("shorter"));
+      document.getElementById("length-inc").setAttribute("aria-label", t("longer"));
+      document.getElementById("thick-dec").setAttribute("aria-label", t("thinner"));
+      document.getElementById("thick-inc").setAttribute("aria-label", t("thicker"));
+      document.getElementById("count-dec").setAttribute("aria-label", t("fewer"));
+      document.getElementById("count-inc").setAttribute("aria-label", t("more"));
+      document.getElementById("edge-dec").setAttribute("aria-label", t("less"));
+      document.getElementById("edge-inc").setAttribute("aria-label", t("greater"));
+      document.getElementById("results-heading").textContent = t("results");
+      document.getElementById("gap-label").textContent = t("gap");
+      document.getElementById("pitch-label").textContent = t("pitch");
+      document.getElementById("pos-label").textContent = t("pos");
+      document.getElementById("figures-heading").textContent = t("figures");
+      document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
+      render();
+    }
+
+    loadState();
+    Workshop.init({ page: "spacing", onChange: applyPage });
+  </script>
+</body>
+</html>

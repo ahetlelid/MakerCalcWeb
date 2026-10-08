@@ -287,6 +287,12 @@ input[type="range"] {
   line-height: 1.05;
 }
 
+.value.pos-list {
+  font-size: clamp(1.1rem, 4.5vw, 1.45rem);
+  font-weight: 650;
+  word-break: break-word;
+}
+
 .hint, .explain, .method, .note {
   margin: 0;
   color: var(--muted);

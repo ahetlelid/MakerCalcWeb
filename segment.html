@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Segment</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <nav class="sitenav" id="sitenav">
+      <a href="index.html" data-nav="home">Verktøy</a>
+      <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
+      <a href="cove.html" data-nav="cove">Hulkil</a>
+      <a href="dovetail.html" data-nav="dovetail">Svalehale</a>
+      <a href="segment.html" data-nav="segment">Segment</a>
+      <a href="spacing.html" data-nav="spacing">Fordeling</a>
+      <a href="arc.html" data-nav="arc">Bue</a>
+      <a href="brace.html" data-nav="brace">Avstiver</a>
+      <select id="langs" aria-label="Språk">
+        <option value="no" lang="no">Norsk</option>
+        <option value="sv" lang="sv">Svenska</option>
+        <option value="da" lang="da">Dansk</option>
+        <option value="fi" lang="fi">Suomi</option>
+        <option value="en" lang="en">English</option>
+      </select>
+    </nav>
+    <header>
+      <h1 id="title">Segment</h1>
+      <p id="intro">Lengder og kappvinkel for ramme, boks og segmentring.</p>
+    </header>
+
+    <section class="panel" id="inputs-panel">
+      <h2 id="mode-heading">Mål</h2>
+      <div class="choices" id="mode-choices">
+        <button type="button" data-mode="flats" aria-pressed="true">Over flater</button>
+        <button type="button" data-mode="tips">Over hjørner</button>
+        <button type="button" data-mode="octagon">Åttkant</button>
+      </div>
+      <div class="field">
+        <label id="sides-label" for="sides">Antall sider</label>
+        <div class="stepper">
+          <button type="button" id="sides-dec" aria-label="Færre">−</button>
+          <div class="measure">
+            <input id="sides" type="text" inputmode="numeric" value="4" autocomplete="off">
+          </div>
+          <button type="button" id="sides-inc" aria-label="Flere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="measure-label" for="measure">Ytre mål</label>
+        <div class="stepper">
+          <button type="button" id="measure-dec" aria-label="Mindre">−</button>
+          <div class="measure">
+            <input id="measure" type="text" inputmode="decimal" value="400" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="measure-inc" aria-label="Større">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="thick-label" for="thick">Listetykkelse</label>
+        <div class="stepper">
+          <button type="button" id="thick-dec" aria-label="Tynnere">−</button>
+          <div class="measure">
+            <input id="thick" type="text" inputmode="decimal" value="40" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="thick-inc" aria-label="Tykkere">+</button>
+        </div>
+        <p class="note" id="thick-hint">Dybden inn i rammen, vinkelrett på yttersiden.</p>
+      </div>
+    </section>
+
+    <section class="panel results" id="results-panel" aria-live="polite">
+      <h2 id="results-heading">Kapp</h2>
+      <div class="result">
+        <span class="result-label" id="angle-label">Kappvinkel</span>
+        <p class="value" id="angle">—</p>
+        <p class="hint" id="angle-hint">Fra rett tverrkutt.</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="outer-label">Ytre lengde</span>
+        <p class="value" id="outer">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="inner-label">Indre lengde</span>
+        <p class="value" id="inner">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="width-label">Minste emnebredde</span>
+        <p class="value" id="width">—</p>
+      </div>
+      <div class="result" id="inset-result" hidden>
+        <span class="result-label" id="inset-label">Innrykk fra hjørne</span>
+        <p class="value" id="inset">—</p>
+      </div>
+      <p class="limit" id="limit" hidden></p>
+    </section>
+
+    <details class="fold figures-fold" id="figures-fold" open>
+      <summary>
+        <span class="fold-label" id="figures-heading">Figurer</span>
+      </summary>
+      <div class="figures" id="figures-panel">
+        <figure>
+          <svg id="plan-svg" viewBox="0 0 320 240" role="img" aria-labelledby="plan-cap"></svg>
+          <figcaption id="plan-cap">Ovenfra</figcaption>
+        </figure>
+      </div>
+    </details>
+  </main>
+  <script src="site.js"></script>
+  <script>
+    var TEXT = {
+      no: {
+        title: "Segment",
+        intro: "Lengder og kappvinkel for ramme, boks og segmentring.",
+        modeHeading: "Mål",
+        flats: "Over flater",
+        tips: "Over hjørner",
+        octagon: "Åttkant",
+        sides: "Antall sider",
+        measure: "Ytre mål",
+        measureOct: "Firkantens side",
+        thick: "Listetykkelse",
+        thickHint: "Dybden inn i rammen, vinkelrett på yttersiden.",
+        fewer: "Færre",
+        more: "Flere",
+        less: "Mindre",
+        greater: "Større",
+        thinner: "Tynnere",
+        thicker: "Tykkere",
+        results: "Kapp",
+        angle: "Kappvinkel",
+        angleHint: "Fra rett tverrkutt.",
+        outer: "Ytre lengde",
+        inner: "Indre lengde",
+        width: "Minste emnebredde",
+        inset: "Innrykk fra hjørne",
+        plan: "Ovenfra",
+        figures: "Figurer",
+        invalid: "Sjekk målene. Antall sider, ytre mål og tykkelse må være gyldige.",
+        tooThick: "Listetykkelsen er for stor for dette målet."
+      },
+      sv: {
+        title: "Segment",
+        intro: "Längder och kappvinkel för ram, låda och segmentring.",
+        modeHeading: "Mått",
+        flats: "Över ytor",
+        tips: "Över hörn",
+        octagon: "Åttkant",
+        sides: "Antal sidor",
+        measure: "Yttre mått",
+        measureOct: "Fyrkantens sida",
+        thick: "Listtjocklek",
+        thickHint: "Djupet in i ramen, vinkelrätt mot yttersidan.",
+        fewer: "Färre",
+        more: "Fler",
+        less: "Mindre",
+        greater: "Större",
+        thinner: "Tunnare",
+        thicker: "Tjockare",
+        results: "Kap",
+        angle: "Kappvinkel",
+        angleHint: "Från rakt kap.",
+        outer: "Yttre längd",
+        inner: "Inre längd",
+        width: "Minsta ämnesbredd",
+        inset: "Indrag från hörn",
+        plan: "Ovanifrån",
+        figures: "Figurer",
+        invalid: "Kontrollera måtten. Antal sidor, yttre mått och tjocklek måste vara giltiga.",
+        tooThick: "Listtjockleken är för stor för det här måttet."
+      },
+      da: {
+        title: "Segment",
+        intro: "Længder og kappevinkel til ramme, kasse og segmentring.",
+        modeHeading: "Mål",
+        flats: "Over flader",
+        tips: "Over hjørner",
+        octagon: "Ottekant",
+        sides: "Antal sider",
+        measure: "Ydre mål",
+        measureOct: "Firkantens side",
+        thick: "Listetykkelse",
+        thickHint: "Dybden ind i rammen, vinkelret på ydersiden.",
+        fewer: "Færre",
+        more: "Flere",
+        less: "Mindre",
+        greater: "Større",
+        thinner: "Tyndere",
+        thicker: "Tykkere",
+        results: "Kap",
+        angle: "Kappevinkel",
+        angleHint: "Fra lige snit.",
+        outer: "Ydre længde",
+        inner: "Indre længde",
+        width: "Mindste emnebredde",
+        inset: "Indryk fra hjørne",
+        plan: "Ovenfra",
+        figures: "Figurer",
+        invalid: "Tjek målene. Antal sider, ydre mål og tykkelse skal være gyldige.",
+        tooThick: "Listetykkelsen er for stor til det mål."
+      },
+      fi: {
+        title: "Segmentti",
+        intro: "Pituudet ja katkaisukulma kehykselle, laatikolle ja segmenttirenkaalle.",
+        modeHeading: "Mitta",
+        flats: "Tasojen yli",
+        tips: "Kulmien yli",
+        octagon: "Kahdeksankulmio",
+        sides: "Sivujen määrä",
+        measure: "Ulkomitta",
+        measureOct: "Neliön sivu",
+        thick: "Listan paksuus",
+        thickHint: "Syvyys kehykseen, kohtisuoraan ulkopintaan.",
+        fewer: "Vähemmän",
+        more: "Enemmän",
+        less: "Pienempi",
+        greater: "Suurempi",
+        thinner: "Ohuempi",
+        thicker: "Paksumpi",
+        results: "Katkaisu",
+        angle: "Katkaisukulma",
+        angleHint: "Suorasta katkaisusta.",
+        outer: "Ulkopituus",
+        inner: "Sisäpituus",
+        width: "Pienin aihion leveys",
+        inset: "Siirto kulmasta",
+        plan: "Ylhäältä",
+        figures: "Kuvat",
+        invalid: "Tarkista mitat. Sivujen määrän, ulkomitan ja paksuuden on oltava kelvollisia.",
+        tooThick: "Listan paksuus on liian suuri tähän mittaan."
+      },
+      en: {
+        title: "Segment",
+        intro: "Lengths and cut angle for frames, boxes and segmented rings.",
+        modeHeading: "Measure",
+        flats: "Across flats",
+        tips: "Across tips",
+        octagon: "Octagon",
+        sides: "Number of sides",
+        measure: "Outer size",
+        measureOct: "Square side",
+        thick: "Stock thickness",
+        thickHint: "Depth into the frame, square to the outer face.",
+        fewer: "Fewer",
+        more: "More",
+        less: "Less",
+        greater: "More",
+        thinner: "Thinner",
+        thicker: "Thicker",
+        results: "Cut",
+        angle: "Cut angle",
+        angleHint: "From a square cut.",
+        outer: "Outer length",
+        inner: "Inner length",
+        width: "Minimum stock width",
+        inset: "Inset from corner",
+        plan: "From above",
+        figures: "Figures",
+        invalid: "Check the sizes. Sides, outer size and thickness must be valid.",
+        tooThick: "The stock thickness is too large for this size."
+      }
+    };
+
+    var state = { mode: "flats", n: 4, m: 400, t: 40 };
+
+    var fields = {
+      sides: document.getElementById("sides"),
+      measure: document.getElementById("measure"),
+      thick: document.getElementById("thick")
+    };
+
+    function t(key) { return TEXT[Workshop.lang()][key]; }
+
+    function formatMm(value, digits) {
+      var places = digits == null ? 1 : digits;
+      return Workshop.formatNumber(value, places);
+    }
+
+    function formatDeg(value) {
+      return Workshop.formatNumber(value, 2) + "°";
+    }
+
+    function writeField(el, value, digits) {
+      if (document.activeElement === el) return;
+      el.value = formatMm(value, digits);
+    }
+
+    function compute() {
+      var n = state.mode === "octagon" ? 8 : Math.round(state.n);
+      var M = state.m;
+      var thick = state.t;
+      if (!(n >= 3) || !(M > 0) || !(thick >= 0)) return { error: "invalid" };
+      var half = Math.PI / n;
+      var angle = 180 / n;
+      var outer;
+      var inner;
+      var width;
+      var inset = null;
+      var af;
+      if (state.mode === "octagon") {
+        inset = M / (2 + Math.SQRT2);
+        outer = M - 2 * inset;
+        af = M;
+        if (af <= 2 * thick) return { error: "tooThick", angle: angle, inset: inset };
+        inner = (af - 2 * thick) * Math.tan(half);
+        width = thick / Math.cos(half);
+      } else if (state.mode === "tips") {
+        outer = M * Math.sin(half);
+        if (M <= 2 * thick) return { error: "tooThick", angle: angle, outer: outer };
+        inner = (M - 2 * thick) * Math.sin(half);
+        width = thick;
+      } else {
+        outer = M * Math.tan(half);
+        if (M <= 2 * thick) return { error: "tooThick", angle: angle, outer: outer };
+        inner = (M - 2 * thick) * Math.tan(half);
+        width = thick / Math.cos(half);
+      }
+      return { n: n, angle: angle, outer: outer, inner: inner, width: width, inset: inset, thick: thick, mode: state.mode, m: M };
+    }
+
+    function showError(code, partial) {
+      document.getElementById("angle").textContent = partial && partial.angle != null ? formatDeg(partial.angle) : "—";
+      document.getElementById("outer").textContent = partial && partial.outer != null ? formatMm(partial.outer, 1) + " mm" : "—";
+      document.getElementById("inner").textContent = "—";
+      document.getElementById("width").textContent = "—";
+      var insetEl = document.getElementById("inset");
+      var insetResult = document.getElementById("inset-result");
+      if (partial && partial.inset != null) {
+        insetResult.hidden = false;
+        insetEl.textContent = formatMm(partial.inset, 1) + " mm";
+      } else {
+        insetResult.hidden = state.mode !== "octagon";
+        insetEl.textContent = "—";
+      }
+      var limit = document.getElementById("limit");
+      limit.hidden = false;
+      limit.textContent = t(code);
+      document.getElementById("plan-svg").innerHTML = "";
+    }
+
+    function renderPlan(result) {
+      var svg = document.getElementById("plan-svg");
+      var n = result.n;
+      var R = 96;
+      var r = Math.max(20, R * (1 - result.thick / Math.max(result.m, 1)));
+      if (result.mode === "tips") {
+        /* R is vertex radius in drawing */
+      } else {
+        r = Math.max(20, R * Math.cos(Math.PI / n) * ((result.m - 2 * result.thick) / result.m) / Math.cos(Math.PI / n));
+        r = Math.max(20, R * (result.m - 2 * result.thick) / result.m);
+      }
+      var cx = 160;
+      var cy = 120;
+      function poly(radius, klass) {
+        var pts = [];
+        for (var i = 0; i < n; i += 1) {
+          var a = -Math.PI / 2 + (result.mode === "tips" ? 0 : Math.PI / n) + i * 2 * Math.PI / n;
+          pts.push((cx + radius * Math.cos(a)).toFixed(1) + "," + (cy + radius * Math.sin(a)).toFixed(1));
+        }
+        return '<polygon class="' + klass + '" points="' + pts.join(" ") + '"/>';
+      }
+      var a0 = -Math.PI / 2 + (result.mode === "tips" ? 0 : Math.PI / n);
+      var a1 = a0 + 2 * Math.PI / n;
+      var ox0 = cx + R * Math.cos(a0);
+      var oy0 = cy + R * Math.sin(a0);
+      var ox1 = cx + R * Math.cos(a1);
+      var oy1 = cy + R * Math.sin(a1);
+      var ix0 = cx + r * Math.cos(a0);
+      var iy0 = cy + r * Math.sin(a0);
+      var ix1 = cx + r * Math.cos(a1);
+      var iy1 = cy + r * Math.sin(a1);
+      svg.innerHTML =
+        poly(R, "plan-shape") +
+        poly(r, "void") +
+        '<polygon class="joint-tail" points="' +
+          ox0.toFixed(1) + "," + oy0.toFixed(1) + " " +
+          ox1.toFixed(1) + "," + oy1.toFixed(1) + " " +
+          ix1.toFixed(1) + "," + iy1.toFixed(1) + " " +
+          ix0.toFixed(1) + "," + iy0.toFixed(1) + '"/>' +
+        '<text class="dim-label" x="160" y="24" text-anchor="middle">' + formatMm(result.outer, 1) + "</text>";
+    }
+
+    function render() {
+      if (state.mode === "octagon") state.n = 8;
+      writeField(fields.sides, state.n, 0);
+      writeField(fields.measure, state.m, 1);
+      writeField(fields.thick, state.t, 1);
+      fields.sides.disabled = state.mode === "octagon";
+      document.getElementById("sides-dec").disabled = state.mode === "octagon" || state.n <= 3;
+      document.getElementById("sides-inc").disabled = state.mode === "octagon" || state.n >= 99;
+      document.getElementById("measure-dec").disabled = state.m <= 1;
+      document.getElementById("measure-inc").disabled = state.m >= 9999;
+      document.getElementById("thick-dec").disabled = state.t <= 0;
+      document.getElementById("thick-inc").disabled = state.t >= 999;
+      var modes = document.querySelectorAll("#mode-choices button");
+      for (var i = 0; i < modes.length; i += 1) {
+        var mode = modes[i].getAttribute("data-mode");
+        modes[i].setAttribute("aria-pressed", mode === state.mode ? "true" : "false");
+        modes[i].textContent = t(mode);
+      }
+      document.getElementById("measure-label").textContent = state.mode === "octagon" ? t("measureOct") : t("measure");
+      document.getElementById("inset-result").hidden = state.mode !== "octagon";
+      saveState();
+      var result = compute();
+      if (result.error) {
+        showError(result.error, result);
+        return;
+      }
+      document.getElementById("angle").textContent = formatDeg(result.angle);
+      document.getElementById("outer").textContent = formatMm(result.outer, 1) + " mm";
+      document.getElementById("inner").textContent = formatMm(result.inner, 1) + " mm";
+      document.getElementById("width").textContent = formatMm(result.width, 1) + " mm";
+      if (result.inset != null) {
+        document.getElementById("inset").textContent = formatMm(result.inset, 1) + " mm";
+      }
+      document.getElementById("limit").hidden = true;
+      renderPlan(result);
+      document.getElementById("plan-cap").textContent = t("plan");
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem("makercalc-segment", JSON.stringify(state));
+      } catch (err) { /* keep for this visit */ }
+    }
+
+    function loadState() {
+      try {
+        var raw = localStorage.getItem("makercalc-segment");
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (data.mode === "flats" || data.mode === "tips" || data.mode === "octagon") state.mode = data.mode;
+        if (data.n >= 3) state.n = data.n;
+        if (data.m > 0) state.m = data.m;
+        if (typeof data.t === "number" && data.t >= 0) state.t = data.t;
+      } catch (err) { /* defaults */ }
+    }
+
+    function nudge(key, delta, min, max, places) {
+      var factor = Math.pow(10, places == null ? 1 : places);
+      var next = Math.round((state[key] + delta) * factor) / factor;
+      if (next < min) next = min;
+      if (next > max) next = max;
+      state[key] = next;
+      render();
+    }
+
+    function onMeasure(el, assign) {
+      el.addEventListener("input", function () {
+        var raw = el.value.trim();
+        if (raw === "" || /[.,]$/.test(raw)) return;
+        var value = Workshop.parseNumber(raw);
+        if (value === null) return;
+        assign(value);
+        render();
+      });
+    }
+
+    onMeasure(fields.sides, function (v) { state.n = Math.max(3, Math.round(v)); });
+    onMeasure(fields.measure, function (v) { state.m = v; });
+    onMeasure(fields.thick, function (v) { state.t = Math.max(0, v); });
+
+    document.getElementById("sides-dec").addEventListener("click", function () { nudge("n", -1, 3, 99, 0); });
+    document.getElementById("sides-inc").addEventListener("click", function () { nudge("n", 1, 3, 99, 0); });
+    document.getElementById("measure-dec").addEventListener("click", function () { nudge("m", -1, 1, 9999); });
+    document.getElementById("measure-inc").addEventListener("click", function () { nudge("m", 1, 1, 9999); });
+    document.getElementById("thick-dec").addEventListener("click", function () { nudge("t", -1, 0, 999); });
+    document.getElementById("thick-inc").addEventListener("click", function () { nudge("t", 1, 0, 999); });
+
+    var modeButtons = document.querySelectorAll("#mode-choices button");
+    for (var b = 0; b < modeButtons.length; b += 1) {
+      modeButtons[b].addEventListener("click", function () {
+        state.mode = this.getAttribute("data-mode");
+        if (state.mode === "octagon") state.n = 8;
+        render();
+      });
+    }
+
+    function applyPage() {
+      document.title = t("title");
+      document.getElementById("title").textContent = t("title");
+      document.getElementById("intro").textContent = t("intro");
+      document.getElementById("mode-heading").textContent = t("modeHeading");
+      document.getElementById("sides-label").textContent = t("sides");
+      document.getElementById("sides-dec").setAttribute("aria-label", t("fewer"));
+      document.getElementById("sides-inc").setAttribute("aria-label", t("more"));
+      document.getElementById("thick-label").textContent = t("thick");
+      document.getElementById("thick-hint").textContent = t("thickHint");
+      document.getElementById("thick-dec").setAttribute("aria-label", t("thinner"));
+      document.getElementById("thick-inc").setAttribute("aria-label", t("thicker"));
+      document.getElementById("measure-dec").setAttribute("aria-label", t("less"));
+      document.getElementById("measure-inc").setAttribute("aria-label", t("greater"));
+      document.getElementById("results-heading").textContent = t("results");
+      document.getElementById("angle-label").textContent = t("angle");
+      document.getElementById("angle-hint").textContent = t("angleHint");
+      document.getElementById("outer-label").textContent = t("outer");
+      document.getElementById("inner-label").textContent = t("inner");
+      document.getElementById("width-label").textContent = t("width");
+      document.getElementById("inset-label").textContent = t("inset");
+      document.getElementById("figures-heading").textContent = t("figures");
+      document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
+      render();
+    }
+
+    loadState();
+    Workshop.init({ page: "segment", onChange: applyPage });
+  </script>
+</body>
+</html>

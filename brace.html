@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Avstiver</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <nav class="sitenav" id="sitenav">
+      <a href="index.html" data-nav="home">Verktøy</a>
+      <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
+      <a href="cove.html" data-nav="cove">Hulkil</a>
+      <a href="dovetail.html" data-nav="dovetail">Svalehale</a>
+      <a href="segment.html" data-nav="segment">Segment</a>
+      <a href="spacing.html" data-nav="spacing">Fordeling</a>
+      <a href="arc.html" data-nav="arc">Bue</a>
+      <a href="brace.html" data-nav="brace">Avstiver</a>
+      <select id="langs" aria-label="Språk">
+        <option value="no" lang="no">Norsk</option>
+        <option value="sv" lang="sv">Svenska</option>
+        <option value="da" lang="da">Dansk</option>
+        <option value="fi" lang="fi">Suomi</option>
+        <option value="en" lang="en">English</option>
+      </select>
+    </nav>
+    <header>
+      <h1 id="title">Avstiver</h1>
+      <p id="intro">Lengde og kappvinkel for skråstag i en lysåpning.</p>
+    </header>
+
+    <section class="panel" id="inputs-panel">
+      <h2 id="inputs-heading">Lysåpning</h2>
+      <div class="field">
+        <label id="width-label" for="width">Bredde</label>
+        <div class="stepper">
+          <button type="button" id="width-dec" aria-label="Smalere">−</button>
+          <div class="measure">
+            <input id="width" type="text" inputmode="decimal" value="600" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="width-inc" aria-label="Bredere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="height-label" for="height">Høyde</label>
+        <div class="stepper">
+          <button type="button" id="height-dec" aria-label="Lavere">−</button>
+          <div class="measure">
+            <input id="height" type="text" inputmode="decimal" value="400" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="height-inc" aria-label="Høyere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="thick-label" for="thick">Listetykkelse</label>
+        <div class="stepper">
+          <button type="button" id="thick-dec" aria-label="Tynnere">−</button>
+          <div class="measure">
+            <input id="thick" type="text" inputmode="decimal" value="20" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="thick-inc" aria-label="Tykkere">+</button>
+        </div>
+        <p class="note" id="thick-hint">Emnets tykkelse. Lengden er diagonalen i lysmålet.</p>
+      </div>
+    </section>
+
+    <section class="panel results" id="results-panel" aria-live="polite">
+      <h2 id="results-heading">Kapp</h2>
+      <div class="result">
+        <span class="result-label" id="length-label">Lengde</span>
+        <p class="value" id="length">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="angle-w-label">Vinkel mot bredde</span>
+        <p class="value" id="angle-w">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="angle-h-label">Vinkel mot høyde</span>
+        <p class="value" id="angle-h">—</p>
+      </div>
+      <p class="limit" id="limit" hidden></p>
+    </section>
+
+    <details class="fold figures-fold" id="figures-fold" open>
+      <summary>
+        <span class="fold-label" id="figures-heading">Figurer</span>
+      </summary>
+      <div class="figures" id="figures-panel">
+        <figure>
+          <svg id="brace-svg" viewBox="0 0 320 240" role="img" aria-labelledby="brace-cap"></svg>
+          <figcaption id="brace-cap">Lysåpning</figcaption>
+        </figure>
+      </div>
+    </details>
+  </main>
+  <script src="site.js"></script>
+  <script>
+    var TEXT = {
+      no: {
+        title: "Avstiver",
+        intro: "Lengde og kappvinkel for skråstag i en lysåpning.",
+        inputs: "Lysåpning",
+        width: "Bredde",
+        height: "Høyde",
+        thick: "Listetykkelse",
+        thickHint: "Emnets tykkelse. Lengden er diagonalen i lysmålet.",
+        narrower: "Smalere",
+        wider: "Bredere",
+        lower: "Lavere",
+        higher: "Høyere",
+        thinner: "Tynnere",
+        thicker: "Tykkere",
+        results: "Kapp",
+        length: "Lengde",
+        angleW: "Vinkel mot bredde",
+        angleH: "Vinkel mot høyde",
+        figure: "Lysåpning",
+        figures: "Figurer",
+        invalid: "Sjekk målene. Bredde og høyde må være større enn null."
+      },
+      sv: {
+        title: "Sträva",
+        intro: "Längd och kappvinkel för snedstag i en öppning.",
+        inputs: "Öppning",
+        width: "Bredd",
+        height: "Höjd",
+        thick: "Listtjocklek",
+        thickHint: "Ämnets tjocklek. Längden är diagonalen i öppningen.",
+        narrower: "Smalare",
+        wider: "Bredare",
+        lower: "Lägre",
+        higher: "Högre",
+        thinner: "Tunnare",
+        thicker: "Tjockare",
+        results: "Kap",
+        length: "Längd",
+        angleW: "Vinkel mot bredd",
+        angleH: "Vinkel mot höjd",
+        figure: "Öppning",
+        figures: "Figurer",
+        invalid: "Kontrollera måtten. Bredd och höjd måste vara större än noll."
+      },
+      da: {
+        title: "Afstiver",
+        intro: "Længde og kappevinkel til skråstag i en lysning.",
+        inputs: "Lysning",
+        width: "Bredde",
+        height: "Højde",
+        thick: "Listetykkelse",
+        thickHint: "Emnets tykkelse. Længden er diagonalen i lysningen.",
+        narrower: "Smallere",
+        wider: "Bredere",
+        lower: "Lavere",
+        higher: "Højere",
+        thinner: "Tyndere",
+        thicker: "Tykkere",
+        results: "Kap",
+        length: "Længde",
+        angleW: "Vinkel mod bredde",
+        angleH: "Vinkel mod højde",
+        figure: "Lysning",
+        figures: "Figurer",
+        invalid: "Tjek målene. Bredde og højde skal være større end nul."
+      },
+      fi: {
+        title: "Tuki",
+        intro: "Pituus ja katkaisukulma vinotuelle aukon sisällä.",
+        inputs: "Aukko",
+        width: "Leveys",
+        height: "Korkeus",
+        thick: "Listan paksuus",
+        thickHint: "Aihion paksuus. Pituus on aukon diagonaali.",
+        narrower: "Kapeampi",
+        wider: "Leveämpi",
+        lower: "Matalampi",
+        higher: "Korkeampi",
+        thinner: "Ohuempi",
+        thicker: "Paksumpi",
+        results: "Katkaisu",
+        length: "Pituus",
+        angleW: "Kulma leveyteen",
+        angleH: "Kulma korkeuteen",
+        figure: "Aukko",
+        figures: "Kuvat",
+        invalid: "Tarkista mitat. Leveyden ja korkeuden on oltava suurempia kuin nolla."
+      },
+      en: {
+        title: "Brace",
+        intro: "Length and cut angles for a diagonal brace in an opening.",
+        inputs: "Opening",
+        width: "Width",
+        height: "Height",
+        thick: "Stock thickness",
+        thickHint: "Thickness of the brace. Length is the diagonal of the opening.",
+        narrower: "Narrower",
+        wider: "Wider",
+        lower: "Lower",
+        higher: "Higher",
+        thinner: "Thinner",
+        thicker: "Thicker",
+        results: "Cut",
+        length: "Length",
+        angleW: "Angle to the width",
+        angleH: "Angle to the height",
+        figure: "Opening",
+        figures: "Figures",
+        invalid: "Check the sizes. Width and height must be greater than zero."
+      }
+    };
+
+    var state = { w: 600, h: 400, t: 20 };
+    var fields = {
+      width: document.getElementById("width"),
+      height: document.getElementById("height"),
+      thick: document.getElementById("thick")
+    };
+
+    function t(key) { return TEXT[Workshop.lang()][key]; }
+    function formatMm(value, digits) {
+      return Workshop.formatNumber(value, digits == null ? 1 : digits);
+    }
+    function formatDeg(value) {
+      return Workshop.formatNumber(value, 2) + "°";
+    }
+    function writeField(el, value, digits) {
+      if (document.activeElement === el) return;
+      el.value = formatMm(value, digits);
+    }
+
+    function compute() {
+      var w = state.w;
+      var h = state.h;
+      if (!(w > 0) || !(h > 0)) return { error: "invalid" };
+      var L = Math.hypot(w, h);
+      var angleW = Math.atan2(h, w) * 180 / Math.PI;
+      var angleH = Math.atan2(w, h) * 180 / Math.PI;
+      return { L: L, angleW: angleW, angleH: angleH, w: w, h: h, t: state.t };
+    }
+
+    function showError(code) {
+      document.getElementById("length").textContent = "—";
+      document.getElementById("angle-w").textContent = "—";
+      document.getElementById("angle-h").textContent = "—";
+      var limit = document.getElementById("limit");
+      limit.hidden = false;
+      limit.textContent = t(code);
+      document.getElementById("brace-svg").innerHTML = "";
+    }
+
+    function renderFigure(result) {
+      var svg = document.getElementById("brace-svg");
+      var pad = 36;
+      var maxW = 320 - 2 * pad;
+      var maxH = 240 - 2 * pad - 10;
+      var scale = Math.min(maxW / result.w, maxH / result.h);
+      var rw = result.w * scale;
+      var rh = result.h * scale;
+      var x0 = (320 - rw) / 2;
+      var y0 = (220 - rh) / 2 + 8;
+      var x1 = x0 + rw;
+      var y1 = y0 + rh;
+      var thick = Math.max(4, Math.min(18, result.t * scale * 0.35));
+      var dx = x1 - x0;
+      var dy = y1 - y0;
+      var len = Math.hypot(dx, dy);
+      var nx = -dy / len * thick / 2;
+      var ny = dx / len * thick / 2;
+      var brace =
+        (x0 + nx).toFixed(1) + "," + (y0 + ny).toFixed(1) + " " +
+        (x1 + nx).toFixed(1) + "," + (y1 + ny).toFixed(1) + " " +
+        (x1 - nx).toFixed(1) + "," + (y1 - ny).toFixed(1) + " " +
+        (x0 - nx).toFixed(1) + "," + (y0 - ny).toFixed(1);
+      svg.innerHTML =
+        '<rect class="plan-shape" x="' + x0.toFixed(1) + '" y="' + y0.toFixed(1) +
+          '" width="' + rw.toFixed(1) + '" height="' + rh.toFixed(1) + '"/>' +
+        '<polygon class="joint-pin" points="' + brace + '"/>' +
+        '<text class="dim-label" x="160" y="' + (y0 - 10).toFixed(1) + '" text-anchor="middle">' +
+          formatMm(result.w, 1) + "</text>" +
+        '<text class="dim-label" x="' + (x0 - 8).toFixed(1) + '" y="' + (y0 + rh / 2).toFixed(1) +
+          '" text-anchor="end">' + formatMm(result.h, 1) + "</text>" +
+        '<text class="dim-label" x="' + ((x0 + x1) / 2 + 12).toFixed(1) + '" y="' +
+          ((y0 + y1) / 2).toFixed(1) + '">' + formatDeg(result.angleW) + "</text>";
+    }
+
+    function render() {
+      writeField(fields.width, state.w, 1);
+      writeField(fields.height, state.h, 1);
+      writeField(fields.thick, state.t, 1);
+      document.getElementById("width-dec").disabled = state.w <= 1;
+      document.getElementById("width-inc").disabled = state.w >= 9999;
+      document.getElementById("height-dec").disabled = state.h <= 1;
+      document.getElementById("height-inc").disabled = state.h >= 9999;
+      document.getElementById("thick-dec").disabled = state.t <= 1;
+      document.getElementById("thick-inc").disabled = state.t >= 999;
+      saveState();
+      var result = compute();
+      if (result.error) {
+        showError(result.error);
+        return;
+      }
+      document.getElementById("length").textContent = formatMm(result.L, 2) + " mm";
+      document.getElementById("angle-w").textContent = formatDeg(result.angleW);
+      document.getElementById("angle-h").textContent = formatDeg(result.angleH);
+      document.getElementById("limit").hidden = true;
+      renderFigure(result);
+      document.getElementById("brace-cap").textContent = t("figure");
+    }
+
+    function saveState() {
+      try { localStorage.setItem("makercalc-brace", JSON.stringify(state)); } catch (err) { /* keep */ }
+    }
+    function loadState() {
+      try {
+        var raw = localStorage.getItem("makercalc-brace");
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (data.w > 0) state.w = data.w;
+        if (data.h > 0) state.h = data.h;
+        if (data.t > 0) state.t = data.t;
+      } catch (err) { /* defaults */ }
+    }
+
+    function nudge(key, delta, min, max) {
+      var next = Math.round((state[key] + delta) * 10) / 10;
+      if (next < min) next = min;
+      if (next > max) next = max;
+      state[key] = next;
+      render();
+    }
+
+    function onMeasure(el, assign) {
+      el.addEventListener("input", function () {
+        var raw = el.value.trim();
+        if (raw === "" || /[.,]$/.test(raw)) return;
+        var value = Workshop.parseNumber(raw);
+        if (value === null) return;
+        assign(value);
+        render();
+      });
+    }
+
+    onMeasure(fields.width, function (v) { state.w = v; });
+    onMeasure(fields.height, function (v) { state.h = v; });
+    onMeasure(fields.thick, function (v) { state.t = v; });
+
+    document.getElementById("width-dec").addEventListener("click", function () { nudge("w", -1, 1, 9999); });
+    document.getElementById("width-inc").addEventListener("click", function () { nudge("w", 1, 1, 9999); });
+    document.getElementById("height-dec").addEventListener("click", function () { nudge("h", -1, 1, 9999); });
+    document.getElementById("height-inc").addEventListener("click", function () { nudge("h", 1, 1, 9999); });
+    document.getElementById("thick-dec").addEventListener("click", function () { nudge("t", -1, 1, 999); });
+    document.getElementById("thick-inc").addEventListener("click", function () { nudge("t", 1, 1, 999); });
+
+    function applyPage() {
+      document.title = t("title");
+      document.getElementById("title").textContent = t("title");
+      document.getElementById("intro").textContent = t("intro");
+      document.getElementById("inputs-heading").textContent = t("inputs");
+      document.getElementById("width-label").textContent = t("width");
+      document.getElementById("height-label").textContent = t("height");
+      document.getElementById("thick-label").textContent = t("thick");
+      document.getElementById("thick-hint").textContent = t("thickHint");
+      document.getElementById("width-dec").setAttribute("aria-label", t("narrower"));
+      document.getElementById("width-inc").setAttribute("aria-label", t("wider"));
+      document.getElementById("height-dec").setAttribute("aria-label", t("lower"));
+      document.getElementById("height-inc").setAttribute("aria-label", t("higher"));
+      document.getElementById("thick-dec").setAttribute("aria-label", t("thinner"));
+      document.getElementById("thick-inc").setAttribute("aria-label", t("thicker"));
+      document.getElementById("results-heading").textContent = t("results");
+      document.getElementById("length-label").textContent = t("length");
+      document.getElementById("angle-w-label").textContent = t("angleW");
+      document.getElementById("angle-h-label").textContent = t("angleH");
+      document.getElementById("figures-heading").textContent = t("figures");
+      document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
+      render();
+    }
+
+    loadState();
+    Workshop.init({ page: "brace", onChange: applyPage });
+  </script>
+</body>
+</html>

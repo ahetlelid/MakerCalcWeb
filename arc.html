@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Bue</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <nav class="sitenav" id="sitenav">
+      <a href="index.html" data-nav="home">Verktøy</a>
+      <a href="miter.html" data-nav="miter">Sammensatt gjæring</a>
+      <a href="cove.html" data-nav="cove">Hulkil</a>
+      <a href="dovetail.html" data-nav="dovetail">Svalehale</a>
+      <a href="segment.html" data-nav="segment">Segment</a>
+      <a href="spacing.html" data-nav="spacing">Fordeling</a>
+      <a href="arc.html" data-nav="arc">Bue</a>
+      <a href="brace.html" data-nav="brace">Avstiver</a>
+      <select id="langs" aria-label="Språk">
+        <option value="no" lang="no">Norsk</option>
+        <option value="sv" lang="sv">Svenska</option>
+        <option value="da" lang="da">Dansk</option>
+        <option value="fi" lang="fi">Suomi</option>
+        <option value="en" lang="en">English</option>
+      </select>
+    </nav>
+    <header>
+      <h1 id="title">Bue</h1>
+      <p id="intro">Radius, buelengde og trammel fra korde og pil.</p>
+    </header>
+
+    <section class="panel" id="inputs-panel">
+      <h2 id="inputs-heading">Bue</h2>
+      <div class="field">
+        <label id="chord-label" for="chord">Korde</label>
+        <div class="stepper">
+          <button type="button" id="chord-dec" aria-label="Kortere">−</button>
+          <div class="measure">
+            <input id="chord" type="text" inputmode="decimal" value="300" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="chord-inc" aria-label="Lengre">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="rise-label" for="rise">Pilhøyde</label>
+        <div class="stepper">
+          <button type="button" id="rise-dec" aria-label="Lavere">−</button>
+          <div class="measure">
+            <input id="rise" type="text" inputmode="decimal" value="40" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="rise-inc" aria-label="Høyere">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="bit-label" for="bit">Fresdiameter</label>
+        <div class="stepper">
+          <button type="button" id="bit-dec" aria-label="Mindre">−</button>
+          <div class="measure">
+            <input id="bit" type="text" inputmode="decimal" value="0" autocomplete="off">
+            <span>mm</span>
+          </div>
+          <button type="button" id="bit-inc" aria-label="Større">+</button>
+        </div>
+        <p class="note" id="bit-hint">0 betyr uten fres. Da skjules trammelmålene.</p>
+      </div>
+    </section>
+
+    <section class="panel results" id="results-panel" aria-live="polite">
+      <h2 id="results-heading">Mål</h2>
+      <div class="result">
+        <span class="result-label" id="radius-label">Radius</span>
+        <p class="value" id="radius">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="angle-label">Sentervinkel</span>
+        <p class="value" id="angle">—</p>
+      </div>
+      <div class="result">
+        <span class="result-label" id="arc-label">Buelengde</span>
+        <p class="value" id="arclen">—</p>
+      </div>
+      <div class="result" id="trammel-result" hidden>
+        <span class="result-label" id="trammel-label">Til trammel</span>
+        <p class="value" id="trammel">—</p>
+        <p class="hint" id="trammel-hint">Senter til bitens akse.</p>
+      </div>
+      <div class="result" id="edge-result" hidden>
+        <span class="result-label" id="edge-label">Til kuttekant</span>
+        <p class="value" id="edge">—</p>
+      </div>
+      <p class="limit" id="limit" hidden></p>
+    </section>
+
+    <details class="fold figures-fold" id="figures-fold" open>
+      <summary>
+        <span class="fold-label" id="figures-heading">Figurer</span>
+      </summary>
+      <div class="figures" id="figures-panel">
+        <figure>
+          <svg id="arc-svg" viewBox="0 0 320 220" role="img" aria-labelledby="arc-cap"></svg>
+          <figcaption id="arc-cap">Bue</figcaption>
+        </figure>
+      </div>
+    </details>
+  </main>
+  <script src="site.js"></script>
+  <script>
+    var TEXT = {
+      no: {
+        title: "Bue",
+        intro: "Radius, buelengde og trammel fra korde og pil.",
+        inputs: "Bue",
+        chord: "Korde",
+        rise: "Pilhøyde",
+        bit: "Fresdiameter",
+        bitHint: "0 betyr uten fres. Da skjules trammelmålene.",
+        shorter: "Kortere",
+        longer: "Lengre",
+        lower: "Lavere",
+        higher: "Høyere",
+        less: "Mindre",
+        greater: "Større",
+        results: "Mål",
+        radius: "Radius",
+        angle: "Sentervinkel",
+        arc: "Buelengde",
+        trammel: "Til trammel",
+        trammelHint: "Senter til bitens akse.",
+        edge: "Til kuttekant",
+        figure: "Bue",
+        figures: "Figurer",
+        invalid: "Sjekk målene. Korde og pilhøyde må være positive.",
+        riseLimit: "Pilhøyden må være større enn null og høyst halvparten av korden."
+      },
+      sv: {
+        title: "Båge",
+        intro: "Radie, båglängd och trammel från korda och pilhöjd.",
+        inputs: "Båge",
+        chord: "Korda",
+        rise: "Pilhöjd",
+        bit: "Fräsdiameter",
+        bitHint: "0 betyder utan fräs. Då döljs trammelmåtten.",
+        shorter: "Kortare",
+        longer: "Längre",
+        lower: "Lägre",
+        higher: "Högre",
+        less: "Mindre",
+        greater: "Större",
+        results: "Mått",
+        radius: "Radie",
+        angle: "Centrumvinkel",
+        arc: "Båglängd",
+        trammel: "Till trammel",
+        trammelHint: "Centrum till fräsens axel.",
+        edge: "Till skäregg",
+        figure: "Båge",
+        figures: "Figurer",
+        invalid: "Kontrollera måtten. Korda och pilhöjd måste vara positiva.",
+        riseLimit: "Pilhöjden måste vara större än noll och högst hälften av kordan."
+      },
+      da: {
+        title: "Bue",
+        intro: "Radius, buelængde og trammel fra korde og pilehøjde.",
+        inputs: "Bue",
+        chord: "Korde",
+        rise: "Pilehøjde",
+        bit: "Fræsdiameter",
+        bitHint: "0 betyder uden fræser. Så skjules trammelmålene.",
+        shorter: "Kortere",
+        longer: "Længere",
+        lower: "Lavere",
+        higher: "Højere",
+        less: "Mindre",
+        greater: "Større",
+        results: "Mål",
+        radius: "Radius",
+        angle: "Centervinkel",
+        arc: "Buelængde",
+        trammel: "Til trammel",
+        trammelHint: "Center til fræserens akse.",
+        edge: "Til skærekant",
+        figure: "Bue",
+        figures: "Figurer",
+        invalid: "Tjek målene. Korde og pilehøjde skal være positive.",
+        riseLimit: "Pilehøjden skal være større end nul og højst halvdelen af korden."
+      },
+      fi: {
+        title: "Kaari",
+        intro: "Säde, kaaren pituus ja trammeli jänteestä ja nuolesta.",
+        inputs: "Kaari",
+        chord: "Jänne",
+        rise: "Nuoli",
+        bit: "Jyrsimen halkaisija",
+        bitHint: "0 tarkoittaa ilman jyrsintä. Silloin trammelimitat piilotetaan.",
+        shorter: "Lyhyempi",
+        longer: "Pidempi",
+        lower: "Matalampi",
+        higher: "Korkeampi",
+        less: "Pienempi",
+        greater: "Suurempi",
+        results: "Mitat",
+        radius: "Säde",
+        angle: "Keskikulma",
+        arc: "Kaaren pituus",
+        trammel: "Trammeliin",
+        trammelHint: "Keskipisteestä jyrsimen akseliin.",
+        edge: "Leikkuureunaan",
+        figure: "Kaari",
+        figures: "Kuvat",
+        invalid: "Tarkista mitat. Jänteen ja nuolen on oltava positiivisia.",
+        riseLimit: "Nuolen on oltava suurempi kuin nolla ja enintään puolet jänteestä."
+      },
+      en: {
+        title: "Arc",
+        intro: "Radius, arc length and trammel from chord and rise.",
+        inputs: "Arc",
+        chord: "Chord",
+        rise: "Rise",
+        bit: "Bit diameter",
+        bitHint: "0 means no bit. Trammel sizes are then hidden.",
+        shorter: "Shorter",
+        longer: "Longer",
+        lower: "Lower",
+        higher: "Higher",
+        less: "Less",
+        greater: "More",
+        results: "Sizes",
+        radius: "Radius",
+        angle: "Center angle",
+        arc: "Arc length",
+        trammel: "To trammel",
+        trammelHint: "Center to the bit axis.",
+        edge: "To cut edge",
+        figure: "Arc",
+        figures: "Figures",
+        invalid: "Check the sizes. Chord and rise must be positive.",
+        riseLimit: "Rise must be greater than zero and at most half the chord."
+      }
+    };
+
+    var state = { c: 300, h: 40, d: 0 };
+    var fields = {
+      chord: document.getElementById("chord"),
+      rise: document.getElementById("rise"),
+      bit: document.getElementById("bit")
+    };
+
+    function t(key) { return TEXT[Workshop.lang()][key]; }
+    function formatMm(value, digits) {
+      return Workshop.formatNumber(value, digits == null ? 1 : digits);
+    }
+    function formatDeg(value) {
+      return Workshop.formatNumber(value, 2) + "°";
+    }
+    function writeField(el, value, digits) {
+      if (document.activeElement === el) return;
+      el.value = formatMm(value, digits);
+    }
+
+    function compute() {
+      var c = state.c;
+      var h = state.h;
+      var d = state.d;
+      if (!(c > 0) || !(h > 0)) return { error: "invalid" };
+      if (h > c / 2 + 1e-9) return { error: "riseLimit" };
+      var R = (c * c) / (8 * h) + h / 2;
+      var theta = 2 * Math.atan2(c / 2, R - h);
+      var arc = R * theta;
+      return {
+        R: R,
+        deg: theta * 180 / Math.PI,
+        arc: arc,
+        d: d,
+        c: c,
+        h: h,
+        trammel: R,
+        edge: d > 0 ? R - d / 2 : null
+      };
+    }
+
+    function showError(code) {
+      document.getElementById("radius").textContent = "—";
+      document.getElementById("angle").textContent = "—";
+      document.getElementById("arclen").textContent = "—";
+      document.getElementById("trammel-result").hidden = true;
+      document.getElementById("edge-result").hidden = true;
+      var limit = document.getElementById("limit");
+      limit.hidden = false;
+      limit.textContent = t(code);
+      document.getElementById("arc-svg").innerHTML = "";
+    }
+
+    function renderArc(result) {
+      var svg = document.getElementById("arc-svg");
+      var pad = 28;
+      var maxW = 320 - 2 * pad;
+      var maxH = 150;
+      var scale = Math.min(maxW / result.c, maxH / Math.max(result.h, result.R - (result.R - result.h)));
+      var chordW = result.c * scale;
+      var riseH = result.h * scale;
+      var Rpx = result.R * scale;
+      var cx = 160;
+      var chordY = 40 + riseH;
+      var cy = chordY - (Rpx - riseH);
+      var x1 = cx - chordW / 2;
+      var x2 = cx + chordW / 2;
+      var start = Math.atan2(chordY - cy, x1 - cx);
+      var end = Math.atan2(chordY - cy, x2 - cx);
+      var large = result.deg > 180 ? 1 : 0;
+      var sx = cx + Rpx * Math.cos(start);
+      var sy = cy + Rpx * Math.sin(start);
+      var ex = cx + Rpx * Math.cos(end);
+      var ey = cy + Rpx * Math.sin(end);
+      svg.innerHTML =
+        '<path class="cove-curve" d="M ' + sx.toFixed(1) + " " + sy.toFixed(1) +
+          " A " + Rpx.toFixed(1) + " " + Rpx.toFixed(1) + " 0 " + large + " 1 " +
+          ex.toFixed(1) + " " + ey.toFixed(1) + '"/>' +
+        '<line class="joint-seam" x1="' + x1.toFixed(1) + '" y1="' + chordY.toFixed(1) +
+          '" x2="' + x2.toFixed(1) + '" y2="' + chordY.toFixed(1) + '"/>' +
+        '<line class="plumb" x1="' + cx.toFixed(1) + '" y1="' + (chordY - riseH).toFixed(1) +
+          '" x2="' + cx.toFixed(1) + '" y2="' + chordY.toFixed(1) + '"/>' +
+        '<circle class="apex" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.5"/>' +
+        '<text class="dim-label" x="160" y="18" text-anchor="middle">' + formatMm(result.c, 1) + "</text>" +
+        '<text class="dim-label" x="' + (cx + 10).toFixed(1) + '" y="' + (chordY - riseH / 2).toFixed(1) + '">' +
+          formatMm(result.h, 1) + "</text>";
+    }
+
+    function render() {
+      writeField(fields.chord, state.c, 1);
+      writeField(fields.rise, state.h, 1);
+      writeField(fields.bit, state.d, 1);
+      document.getElementById("chord-dec").disabled = state.c <= 1;
+      document.getElementById("chord-inc").disabled = state.c >= 9999;
+      document.getElementById("rise-dec").disabled = state.h <= 0.1;
+      document.getElementById("rise-inc").disabled = state.h >= state.c / 2;
+      document.getElementById("bit-dec").disabled = state.d <= 0;
+      document.getElementById("bit-inc").disabled = state.d >= 200;
+      saveState();
+      var result = compute();
+      if (result.error) {
+        showError(result.error);
+        return;
+      }
+      document.getElementById("radius").textContent = formatMm(result.R, 2) + " mm";
+      document.getElementById("angle").textContent = formatDeg(result.deg);
+      document.getElementById("arclen").textContent = formatMm(result.arc, 1) + " mm";
+      var showBit = result.d > 0;
+      document.getElementById("trammel-result").hidden = !showBit;
+      document.getElementById("edge-result").hidden = !showBit;
+      if (showBit) {
+        document.getElementById("trammel").textContent = formatMm(result.trammel, 2) + " mm";
+        document.getElementById("edge").textContent = formatMm(result.edge, 2) + " mm";
+      }
+      document.getElementById("limit").hidden = true;
+      renderArc(result);
+      document.getElementById("arc-cap").textContent = t("figure");
+    }
+
+    function saveState() {
+      try { localStorage.setItem("makercalc-arc", JSON.stringify(state)); } catch (err) { /* keep */ }
+    }
+    function loadState() {
+      try {
+        var raw = localStorage.getItem("makercalc-arc");
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (data.c > 0) state.c = data.c;
+        if (data.h > 0) state.h = data.h;
+        if (typeof data.d === "number" && data.d >= 0) state.d = data.d;
+      } catch (err) { /* defaults */ }
+    }
+
+    function nudge(key, delta, min, max) {
+      var next = Math.round((state[key] + delta) * 10) / 10;
+      if (next < min) next = min;
+      if (next > max) next = max;
+      state[key] = next;
+      render();
+    }
+
+    function onMeasure(el, assign) {
+      el.addEventListener("input", function () {
+        var raw = el.value.trim();
+        if (raw === "" || /[.,]$/.test(raw)) return;
+        var value = Workshop.parseNumber(raw);
+        if (value === null) return;
+        assign(value);
+        render();
+      });
+    }
+
+    onMeasure(fields.chord, function (v) { state.c = v; });
+    onMeasure(fields.rise, function (v) { state.h = v; });
+    onMeasure(fields.bit, function (v) { state.d = Math.max(0, v); });
+
+    document.getElementById("chord-dec").addEventListener("click", function () { nudge("c", -1, 1, 9999); });
+    document.getElementById("chord-inc").addEventListener("click", function () { nudge("c", 1, 1, 9999); });
+    document.getElementById("rise-dec").addEventListener("click", function () { nudge("h", -1, 0.1, state.c / 2); });
+    document.getElementById("rise-inc").addEventListener("click", function () { nudge("h", 1, 0.1, state.c / 2); });
+    document.getElementById("bit-dec").addEventListener("click", function () { nudge("d", -1, 0, 200); });
+    document.getElementById("bit-inc").addEventListener("click", function () { nudge("d", 1, 0, 200); });
+
+    function applyPage() {
+      document.title = t("title");
+      document.getElementById("title").textContent = t("title");
+      document.getElementById("intro").textContent = t("intro");
+      document.getElementById("inputs-heading").textContent = t("inputs");
+      document.getElementById("chord-label").textContent = t("chord");
+      document.getElementById("rise-label").textContent = t("rise");
+      document.getElementById("bit-label").textContent = t("bit");
+      document.getElementById("bit-hint").textContent = t("bitHint");
+      document.getElementById("chord-dec").setAttribute("aria-label", t("shorter"));
+      document.getElementById("chord-inc").setAttribute("aria-label", t("longer"));
+      document.getElementById("rise-dec").setAttribute("aria-label", t("lower"));
+      document.getElementById("rise-inc").setAttribute("aria-label", t("higher"));
+      document.getElementById("bit-dec").setAttribute("aria-label", t("less"));
+      document.getElementById("bit-inc").setAttribute("aria-label", t("greater"));
+      document.getElementById("results-heading").textContent = t("results");
+      document.getElementById("radius-label").textContent = t("radius");
+      document.getElementById("angle-label").textContent = t("angle");
+      document.getElementById("arc-label").textContent = t("arc");
+      document.getElementById("trammel-label").textContent = t("trammel");
+      document.getElementById("trammel-hint").textContent = t("trammelHint");
+      document.getElementById("edge-label").textContent = t("edge");
+      document.getElementById("figures-heading").textContent = t("figures");
+      document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
+      render();
+    }
+
+    loadState();
+    Workshop.init({ page: "arc", onChange: applyPage });
+  </script>
+</body>
+</html>
