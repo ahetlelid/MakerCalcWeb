@@ -64,8 +64,11 @@
       </div>
     </section>
 
-    <section class="panel" id="blade-panel">
-      <h2 id="blade-heading">Sagblad</h2>
+    <details class="panel fold" id="blade-panel" open>
+      <summary>
+        <span class="fold-label" id="blade-heading">Sagblad</span>
+        <span class="fold-value" id="blade-summary">254 mm · 3,2 mm</span>
+      </summary>
       <div class="field">
         <label id="blade-label" for="blade">Bladdiameter</label>
         <div class="choices" id="blade-choices">
@@ -104,7 +107,7 @@
         </div>
         <p class="note" id="kerf-note">Langs bladet blir sporet like bredt som kuttbredden. På tvers blir det like bredt som bladbuen.</p>
       </div>
-    </section>
+    </details>
 
     <section class="panel results" id="results-panel" aria-live="polite">
       <h2 id="setup-heading">Sagoppsett</h2>
@@ -134,16 +137,21 @@
       <p class="limit" id="limit" hidden></p>
     </section>
 
-    <section class="figures" id="figures-panel">
-      <figure>
-        <svg id="section-svg" viewBox="0 0 320 180" role="img" aria-labelledby="section-cap"></svg>
-        <figcaption id="section-cap">Tverrsnitt</figcaption>
-      </figure>
-      <figure>
-        <svg id="plan-svg" viewBox="0 0 320 200" role="img" aria-labelledby="plan-cap"></svg>
-        <figcaption id="plan-cap">Ovenfra</figcaption>
-      </figure>
-    </section>
+    <details class="fold figures-fold" id="figures-fold" open>
+      <summary>
+        <span class="fold-label" id="figures-heading">Figurer</span>
+      </summary>
+      <div class="figures" id="figures-panel">
+        <figure>
+          <svg id="section-svg" viewBox="0 0 320 180" role="img" aria-labelledby="section-cap"></svg>
+          <figcaption id="section-cap">Tverrsnitt</figcaption>
+        </figure>
+        <figure>
+          <svg id="plan-svg" viewBox="0 0 320 200" role="img" aria-labelledby="plan-cap"></svg>
+          <figcaption id="plan-cap">Ovenfra</figcaption>
+        </figure>
+      </div>
+    </details>
   </main>
   <script src="site.js"></script>
   <script>
@@ -649,6 +657,8 @@
       writeField(fields.kerf, state.kerf, 1);
       markChoices("#blade-choices", "data-blade", state.blade);
       markChoices("#kerf-choices", "data-kerf", state.kerf);
+      document.getElementById("blade-summary").textContent =
+        formatMm(state.blade) + " mm · " + formatMm(state.kerf, 1) + " mm";
       document.getElementById("width-dec").disabled = state.w <= 1;
       document.getElementById("width-inc").disabled = state.w >= 999;
       document.getElementById("depth-dec").disabled = state.d <= 1;
@@ -794,6 +804,7 @@
       document.getElementById("center-label").textContent = t("toCenter");
       document.getElementById("side-label").textContent = t("toSide");
       document.getElementById("center-hint").textContent = t("fromLeft");
+      document.getElementById("figures-heading").textContent = t("figures");
       document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
       var kerfButtons = document.querySelectorAll("#kerf-choices button");
       for (var k = 0; k < kerfButtons.length; k += 1) {

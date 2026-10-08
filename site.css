@@ -350,8 +350,135 @@ svg .joint-dim { fill: none; stroke: var(--brass); stroke-width: 1.3; }
 
 .joint-figures { grid-template-columns: 1fr; }
 
+details.fold > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  list-style: none;
+  font: inherit;
+  color: inherit;
+}
+
+details.fold > summary::-webkit-details-marker { display: none; }
+
+details.fold > summary:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.fold-label {
+  font-size: 0.82rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.fold-value {
+  margin-left: auto;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+details.fold > summary::after {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: 0.15rem;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg);
+  flex: 0 0 auto;
+}
+
+details.fold:not(:has(.fold-value)) > summary::after { margin-left: auto; }
+
+details.fold[open] > summary::after { transform: rotate(45deg); }
+
+details.panel.fold[open] > summary { margin-bottom: 0.7rem; }
+
+details.figures-fold { margin-top: 1.1rem; }
+
+details.figures-fold > summary {
+  min-height: 2.75rem;
+  padding: 0.75rem 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+details.figures-fold[open] > summary { margin-bottom: 0.75rem; }
+
 @media (max-width: 640px) {
   .figures { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  main { padding: 0.45rem 0.75rem calc(0.35rem + env(safe-area-inset-bottom)); }
+
+  .sitenav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-bottom: 0.45rem;
+    scrollbar-width: none;
+  }
+
+  .sitenav::-webkit-scrollbar { display: none; }
+
+  .sitenav a,
+  #langs { flex: 0 0 auto; }
+
+  #title { font-size: 1.35rem; }
+
+  header p#intro { display: none; }
+
+  .panel,
+  details.figures-fold { margin-top: 0.5rem; }
+
+  .panel { padding: 0.55rem 0.65rem; }
+
+  .field + .field,
+  .modes + .field,
+  .choices + .measure { margin-top: 0.4rem; }
+
+  .field:has(> .stepper) {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .field:has(> .stepper) > label {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .field:has(> .stepper) > .stepper { flex: 0 0 13.25rem; }
+
+  section.panel .note { display: none; }
+
+  .result {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .result + .result {
+    margin-top: 0.28rem;
+    padding-top: 0.28rem;
+  }
+
+  .result .hint,
+  .explain,
+  .method { display: none; }
+
+  .value { font-size: 1.45rem; }
 }
 
 @media (max-width: 380px) {

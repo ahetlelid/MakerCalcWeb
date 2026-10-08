@@ -159,6 +159,10 @@
       });
     }
     applyChrome();
+    if (window.matchMedia("(max-width: 700px)").matches) {
+      var folds = document.querySelectorAll("details.fold");
+      for (var f = 0; f < folds.length; f += 1) folds[f].open = false;
+    }
     if (onChange) onChange(lang);
   }
 

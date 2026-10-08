@@ -70,16 +70,21 @@
       <p class="limit" id="limit" hidden></p>
     </section>
 
-    <section class="figures" id="figures-panel" aria-label="Figurer">
-      <figure>
-        <svg id="section-svg" viewBox="0 0 320 210" role="img" aria-labelledby="section-cap"></svg>
-        <figcaption id="section-cap">Tverrsnitt</figcaption>
-      </figure>
-      <figure>
-        <svg id="plan-svg" viewBox="0 0 200 200" role="img" aria-labelledby="plan-cap"></svg>
-        <figcaption id="plan-cap">Ovenfra</figcaption>
-      </figure>
-    </section>
+    <details class="fold figures-fold" id="figures-fold" open>
+      <summary>
+        <span class="fold-label" id="figures-heading">Figurer</span>
+      </summary>
+      <div class="figures" id="figures-panel">
+        <figure>
+          <svg id="section-svg" viewBox="0 0 320 210" role="img" aria-labelledby="section-cap"></svg>
+          <figcaption id="section-cap">Tverrsnitt</figcaption>
+        </figure>
+        <figure>
+          <svg id="plan-svg" viewBox="0 0 200 200" role="img" aria-labelledby="plan-cap"></svg>
+          <figcaption id="plan-cap">Ovenfra</figcaption>
+        </figure>
+      </div>
+    </details>
   </main>
 
   <script src="site.js"></script>
@@ -343,6 +348,7 @@
       document.getElementById("intro").textContent = t("intro");
       document.getElementById("langs").setAttribute("aria-label", t("language"));
       document.getElementById("inputs-panel").setAttribute("aria-label", t("inputs"));
+      document.getElementById("figures-heading").textContent = t("figures");
       document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
       document.getElementById("sides-label").textContent = t("sides");
       sidesDec.setAttribute("aria-label", t("fewer"));

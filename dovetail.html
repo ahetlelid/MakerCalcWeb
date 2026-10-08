@@ -80,8 +80,11 @@
       </div>
     </section>
 
-    <section class="panel" id="angle-panel">
-      <h2 id="angle-heading">Vinkel</h2>
+    <details class="panel fold" id="angle-panel" open>
+      <summary>
+        <span class="fold-label" id="angle-heading">Vinkel</span>
+        <span class="fold-value" id="angle-summary">1:8</span>
+      </summary>
       <div class="choices" id="angle-choices">
         <button type="button" data-angle="0">0°</button>
         <button type="button" data-angle="7.13" aria-pressed="true">1:8</button>
@@ -100,10 +103,13 @@
         </div>
         <p class="note" id="angle-note">1:8 er 7,13°. 1:6 er 9,46°.</p>
       </div>
-    </section>
+    </details>
 
-    <section class="panel" id="floor-panel" hidden>
-      <h2 id="floor-heading">Bunn</h2>
+    <details class="panel fold" id="floor-panel" hidden open>
+      <summary>
+        <span class="fold-label" id="floor-heading">Bunn</span>
+        <span class="fold-value" id="floor-summary">6,0 mm</span>
+      </summary>
       <div class="field">
         <label id="floor-label" for="floor">Bunn</label>
         <div class="stepper">
@@ -116,7 +122,7 @@
         </div>
         <p class="note" id="floor-hint">Tykkelsen som står igjen på forsiden.</p>
       </div>
-    </section>
+    </details>
 
     <section class="panel results" id="results-panel" aria-live="polite">
       <h2 id="results-heading">Mål</h2>
@@ -136,16 +142,21 @@
       <p class="limit" id="limit" hidden></p>
     </section>
 
-    <section class="figures joint-figures" id="figures-panel">
-      <figure>
-        <svg id="face-svg" viewBox="0 0 320 470" role="img" aria-labelledby="face-cap"></svg>
-        <figcaption id="face-cap">Endeflate</figcaption>
-      </figure>
-      <figure>
-        <svg id="corner-svg" viewBox="0 0 320 240" role="img" aria-labelledby="corner-cap"></svg>
-        <figcaption id="corner-cap">Hjørne</figcaption>
-      </figure>
-    </section>
+    <details class="fold figures-fold" id="figures-fold" open>
+      <summary>
+        <span class="fold-label" id="figures-heading">Figurer</span>
+      </summary>
+      <div class="figures joint-figures" id="figures-panel">
+        <figure>
+          <svg id="face-svg" viewBox="0 0 320 470" role="img" aria-labelledby="face-cap"></svg>
+          <figcaption id="face-cap">Endeflate</figcaption>
+        </figure>
+        <figure>
+          <svg id="corner-svg" viewBox="0 0 320 240" role="img" aria-labelledby="corner-cap"></svg>
+          <figcaption id="corner-cap">Hjørne</figcaption>
+        </figure>
+      </div>
+    </details>
   </main>
   <script src="site.js"></script>
   <script>
@@ -189,6 +200,7 @@
         lip: "Kant",
         show: "Forside",
         corner: "Hjørne",
+        figures: "Figurer",
         invalid: "Sjekk målene. Bredde, tykkelse og pinnebredde må være større enn null.",
         pinsFit: "Pinnene er bredere enn bordet.",
         noDepth: "Bunnen må være mindre enn bordtykkelsen."
@@ -232,6 +244,7 @@
         lip: "Kant",
         show: "Framsida",
         corner: "Hörn",
+        figures: "Figurer",
         invalid: "Kontrollera måtten. Bredd, tjocklek och tappbredd måste vara större än noll.",
         pinsFit: "Tapparna är bredare än brädan.",
         noDepth: "Botten måste vara mindre än brädtjockleken."
@@ -275,6 +288,7 @@
         lip: "Kant",
         show: "Forside",
         corner: "Hjørne",
+        figures: "Figurer",
         invalid: "Tjek målene. Bredde, tykkelse og tapbredde skal være større end nul.",
         pinsFit: "Tappene er bredere end brættet.",
         noDepth: "Bunden skal være mindre end brættykkelsen."
@@ -318,6 +332,7 @@
         lip: "Reuna",
         show: "Etupuoli",
         corner: "Nurkka",
+        figures: "Kuvat",
         invalid: "Tarkista mitat. Leveyden, paksuuden ja tapin leveyden on oltava suurempia kuin nolla.",
         pinsFit: "Tapit ovat lautaa leveämpiä.",
         noDepth: "Pohjan on oltava laudan paksuutta pienempi."
@@ -361,6 +376,7 @@
         lip: "Lip",
         show: "Show face",
         corner: "Corner",
+        figures: "Figures",
         invalid: "Check the sizes. Width, thickness and pin width must be greater than zero.",
         pinsFit: "The pins are wider than the board.",
         noDepth: "The floor must be less than the board thickness."
@@ -614,6 +630,13 @@
       svg.innerHTML = html;
     }
 
+    function angleSummary() {
+      if (Math.abs(state.angle - 7.13) < 0.02) return "1:8";
+      if (Math.abs(state.angle - 9.46) < 0.02) return "1:6";
+      if (Math.abs(state.angle) < 0.01) return "0°";
+      return formatMm(state.angle, 2) + "°";
+    }
+
     function render() {
       if (state.floor < 0) state.floor = 0;
       if (state.floor > state.t) state.floor = state.t;
@@ -643,6 +666,8 @@
         if (preset === "custom") angleButtons[a].textContent = t("custom");
       }
       document.getElementById("floor-panel").hidden = state.type !== "half";
+      document.getElementById("angle-summary").textContent = angleSummary();
+      document.getElementById("floor-summary").textContent = formatMm(state.floor, 1) + " mm";
       document.getElementById("width-dec").disabled = state.w <= 1;
       document.getElementById("width-inc").disabled = state.w >= 999;
       document.getElementById("thickness-dec").disabled = state.t <= 1;
@@ -815,7 +840,8 @@
       document.getElementById("depth-hint").textContent = t("depthHint");
       document.getElementById("face-cap").textContent = t("face");
       document.getElementById("corner-cap").textContent = t("corner");
-      document.getElementById("figures-panel").setAttribute("aria-label", t("results"));
+      document.getElementById("figures-heading").textContent = t("figures");
+      document.getElementById("figures-panel").setAttribute("aria-label", t("figures"));
       render();
     }
 
